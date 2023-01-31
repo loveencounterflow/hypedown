@@ -1,14 +1,16 @@
 lockfileVersion: 5.4
 
 specifiers:
+  datom: ^11.0.0
   guy: ^12.7.0
-  intertext-lexer: ^0.0.1
+  intertext-lexer: ^0.0.2
   intertype: ^0.111.0
   moonriver: ^3.0.0
 
 dependencies:
+  datom: 11.0.0
   guy: 12.7.0
-  intertext-lexer: 0.0.1
+  intertext-lexer: 0.0.2
   intertype: 0.111.0
   moonriver: 3.0.0
 
@@ -17,6 +19,11 @@ packages:
   /ansi-regex/5.0.1:
     resolution: {integrity: sha512-quJQXlTSUGL2LH9SUXo8VwsY4soanhgo6LNSm84E1LBcE8s3O0wpdiRzyR9z/ZZJMlMWv37qOOb9pdJlMUEKFQ==}
     engines: {node: '>=8'}
+    dev: false
+
+  /cnd/9.2.1:
+    resolution: {integrity: sha512-JszZtSlOCxkIvNPKpw1PmIcQUjYO+pBqVoKVH2STHLtG4JHHJ1NHowv39lhyxzlPxUTZk7pZ3qO7CfrfJ8ZSKw==}
+    hasBin: true
     dev: false
 
   /cnd/9.2.3:
@@ -89,13 +96,14 @@ packages:
       letsfreezethat: 3.1.0
     dev: false
 
-  /intertext-lexer/0.0.1:
-    resolution: {integrity: sha512-SintG2I3Rnm3+nr/WANduM1HxWY9ZgK82ekcyEJkG8o6BKgAOWsVBjERCitQqKphXToFUywkZGRUzS32UJdjyw==}
+  /intertext-lexer/0.0.2:
+    resolution: {integrity: sha512-q+AoimT1ygA2GJ7ZcerLycqHltDjeTXFWrz5/o3AFQrf6J1EXigcuMnzMFYS6xjhpOVhSnrZSOcw1NbHSQvO5Q==}
     dependencies:
       compose-regexp-commonjs: 0.6.24
       datom: 11.0.0
       guy: 12.7.0
       intertype: 0.111.0
+      ltsort: 4.0.0
     transitivePeerDependencies:
       - acorn
       - acorn-loose
@@ -157,6 +165,21 @@ packages:
 
   /letsfreezethat/3.1.0:
     resolution: {integrity: sha512-jJ1nvvQi6unW0WifjNPMIb64Byom0EXzSKWFYA++EpyjK3qv1J2pqeSoEJ61tGJoNG0GoNjPoeLYhxW16riZaA==}
+    dev: false
+
+  /ltsort/4.0.0:
+    resolution: {integrity: sha512-m+x31OrULRN/ygEtrviudpyxxohvpciisSBeck25ex52LzxrC7sIqEhZAoDB8zQckTASySKFpp2rPBDJYYOfrw==}
+    dependencies:
+      cnd: 9.2.1
+      guy: 12.7.0
+      intertype: 0.111.0
+    transitivePeerDependencies:
+      - acorn
+      - acorn-loose
+      - acorn-walk
+      - astring
+      - dayjs
+      - tmp
     dev: false
 
   /moonriver/3.0.0:

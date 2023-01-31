@@ -2,7 +2,7 @@
   "name": "hypedown",
   "version": "0.0.1",
   "description": "A MarkDown-like Text Formatting Language",
-  "main": "index.js",
+  "main": "lib/main.js",
   "scripts": {
     "test": "echo see 'https://github.com/loveencounterflow/hengist/tree/master/dev/hypedown'"
   },
@@ -19,8 +19,9 @@
   ],
   "author": "",
   "dependencies": {
+    "datom": "^11.0.0",
     "guy": "^12.7.0",
-    "intertext-lexer": "^0.0.1",
+    "intertext-lexer": "^0.0.2",
     "intertype": "^0.111.0",
     "moonriver": "^3.0.0"
   }
