@@ -1,0 +1,27 @@
+{
+  "name": "hypedown",
+  "version": "0.0.0",
+  "description": "A MarkDown-like Text Formatting Language",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo see 'https://github.com/loveencounterflow/hengist/tree/master/dev/hypedown'"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/loveencounterflow/hypedown",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/loveencounterflow/hypedown.git"
+  },
+  "keywords": [
+    "markdown",
+    "html",
+    "markup"
+  ],
+  "author": "",
+  "dependencies": {
+    "guy": "^12.7.0",
+    "intertext-lexer": "^0.0.1",
+    "intertype": "^0.111.0",
+    "moonriver": "^3.0.0"
+  }
+}
