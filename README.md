@@ -15,6 +15,7 @@
 
 ## HypeDown: A MarkDown-like Text Formatting Language
 
-
+* **Hype**rtext Mark**Down**—an extensible subset of [MarkDown](https://commonmark.org) with an extensible
+  superset of [HTML5](https://developer.mozilla.org/en-US/docs/Web/HTML)
 
 
