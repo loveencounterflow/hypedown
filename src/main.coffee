@@ -178,8 +178,8 @@ class Hypedown_parser
 
   #---------------------------------------------------------------------------------------------------------
   constructor: ( cfg ) ->
-    # @types        = get_base_types()
-    # @cfg          = Object.freeze @types.create.ilx_constructor_cfg cfg
+    @types        = get_base_types()
+    @cfg          = Object.freeze @types.create.hd_constructor_cfg cfg
     # @start()
     # @base_mode    = null
     # @registry     = {}
