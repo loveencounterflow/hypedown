@@ -107,22 +107,11 @@ add_star1 = ( lexer, base_mode ) ->
 new_hypedown_lexer = ( mode = 'plain' ) ->
   lexer             = new Interlex { dotall: false, }
   standard_sx       = new Standard_sx()
-  info '^35-1^', standard_sx
   markdown_sx       = new Markdown_sx { mode: 'standard', codespan_mode: 'cspan', }
   lexemes_lst       = []
   standard_sx.add_lexemes lexemes_lst
-  info '^35-1^', standard_sx
   markdown_sx.add_lexemes lexemes_lst
-  info '^35-2^', rpr lexeme for lexeme in lexemes_lst
-  lexemes_obj       = {}
-  standard_sx.add_lexemes lexemes_obj
-  markdown_sx.add_lexemes lexemes_obj
-  info '^35-3^', ( k.padEnd 30 ), ( GUY.trm.gold lexeme ) for k, lexeme of lexemes_obj
-  info '^35-4^', standard_sx
-  standard_sx.add_lexemes()
-  info '^35-6^', standard_sx
   lexer.add_lexeme lexeme for lexeme in lexemes_lst
-  console.log '^35-1^', ( require 'util' ).inspect lexemes_obj
   help '^35-1^', d for d from lexer.walk "`helo` world"
   process.exit 111
   # debug '^99-2^', standard_sx.backslash_escape
