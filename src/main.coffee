@@ -58,11 +58,13 @@ class Standard_sx extends Syntax
 
   #---------------------------------------------------------------------------------------------------------
   @lx_backslash_escape:  { tid: 'escchr', jump: null, pattern: /\\(?<chr>.)/u, }
+  ### TAINT use 'forbidden chrs' (to be implemented) ###
   @lx_catchall:          { tid: 'other',  jump: null, pattern: /[^*`\\]+/u, }
-  @lx_foo: 'foo'
-  @lx_bar: /bar/
-  @lx_something: [ 'foo', /bar/, 'baz', ]
-  @lx_xxx: -> 'xxx'
+
+  # @lx_foo: 'foo'
+  # @lx_bar: /bar/
+  # @lx_something: [ 'foo', /bar/, 'baz', ]
+  # @lx_xxx: -> 'xxx'
 
 
 #===========================================================================================================
