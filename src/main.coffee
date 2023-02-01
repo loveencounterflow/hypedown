@@ -41,8 +41,8 @@ E                         = require './errors'
 
 
 #-----------------------------------------------------------------------------------------------------------
-new_token = ( ref, token, mode, tid, name, value, start, stop, x = null, lexeme = null ) ->
-  ### TAINT recreation of `Interlex::new_token()` ###
+XXX_new_token = ( ref, token, mode, tid, name, value, start, stop, x = null, lexeme = null ) ->
+  ### TAINT recreation of `Interlex::XXX_new_token()` ###
   jump      = lexeme?.jump ? null
   { start
     stop  } = token
@@ -97,111 +97,117 @@ class Markdown_sx extends Syntax
       { mode: @cfg.codespan_mode, tid: 'text',      jump: null,           pattern:  /(?:\\`|[^`])+/u,   }
       ]
 
-#-----------------------------------------------------------------------------------------------------------
-add_star1 = ( lexer, base_mode ) ->
-  lexer.add_lexeme { mode: base_mode, tid: 'star1',     jump: null,       pattern:  /(?<!\*)\*(?!\*)/u, }
-  return null
+  #---------------------------------------------------------------------------------------------------------
+  @lx_star1:  /(?<!\*)\*(?!\*)/u
 
 
 #===========================================================================================================
-new_hypedown_lexer = ( mode = 'plain' ) ->
-  lexer             = new Interlex { dotall: false, }
-  standard_sx       = new Standard_sx()
-  markdown_sx       = new Markdown_sx { mode: 'standard', codespan_mode: 'cspan', }
-  lexemes_lst       = []
-  standard_sx.add_lexemes lexemes_lst
-  markdown_sx.add_lexemes lexemes_lst
-  lexer.add_lexeme lexeme for lexeme in lexemes_lst
-  help '^35-1^', d for d from lexer.walk "`helo` world"
-  process.exit 111
-  # debug '^99-2^', standard_sx.backslash_escape
-  # debug '^99-4^', markdown_sx.variable_codespan
-  # add_backslash_escape    lexer, 'base'
-  # add_star1               lexer, 'base'
-  # add_variable_codespans  lexer, 'base', 'codespan'
-  # add_catchall            lexer, 'base'
-  return lexer
+class Hypedown_lexer extends Interlex
+
+  #---------------------------------------------------------------------------------------------------------
+  constructor: ->
+    super { dotall: false, }
+    standard_sx       = new Standard_sx()
+    markdown_sx       = new Markdown_sx { mode: 'standard', codespan_mode: 'cspan', }
+    lexemes_lst       = []
+    standard_sx.add_lexemes lexemes_lst
+    markdown_sx.add_lexemes lexemes_lst
+    @add_lexeme lexeme for lexeme in lexemes_lst
+    return undefined
+
 
 #===========================================================================================================
-$parse_md_codespan = ( outer_mode, enter_tid, inner_mode, exit_tid ) ->
-  ### TAINT use CFG pattern ###
-  ### TAINT use API for `mode:key` IDs ###
-  enter_mk  = "#{outer_mode}:#{enter_tid}"
-  exit_mk   = "#{inner_mode}:#{exit_tid}"
-  return ( d, send ) ->
-    switch d.mk
-      when enter_mk
-        send stamp d
-        send new_token '^æ2^', d, 'html', 'tag', 'code', '<code>'
-      when exit_mk
-        send stamp d
-        send new_token '^æ1^', d, 'html', 'tag', 'code', '</code>'
-      else
-        send d
-    return null
+class Hypedown_transforms
 
-#-----------------------------------------------------------------------------------------------------------
-$parse_md_star = ( star1_tid ) ->
-  #.........................................................................................................
-  within =
-    one:    false
-  start_of =
-    one:    null
-  #.........................................................................................................
-  enter = ( mode, start ) ->
-    within[   mode ] = true
-    start_of[ mode ] = start
-    return null
-  enter.one = ( start ) -> enter 'one', start
-  #.........................................................................................................
-  exit = ( mode ) ->
-    within[   mode ] = false
-    start_of[ mode ] = null
-    return null
-  exit.one = -> exit 'one'
-  #.........................................................................................................
-  return ( d, send ) ->
-    switch d.tid
-      #.....................................................................................................
-      when star1_tid
-        send stamp d
-        if within.one then  exit.one();         send new_token '^æ1^', d, 'html', 'tag', 'i', '</i>'
-        else                enter.one d.start;  send new_token '^æ2^', d, 'html', 'tag', 'i', '<i>'
-      #.....................................................................................................
-      else send d
-    return null
+  #---------------------------------------------------------------------------------------------------------
+  $parse_md_codespan: ( outer_mode, enter_tid, inner_mode, exit_tid ) ->
+    ### TAINT use CFG pattern ###
+    ### TAINT use API for `mode:key` IDs ###
+    enter_mk  = "#{outer_mode}:#{enter_tid}"
+    exit_mk   = "#{inner_mode}:#{exit_tid}"
+    return ( d, send ) ->
+      switch d.mk
+        when enter_mk
+          send stamp d
+          send XXX_new_token '^æ2^', d, 'html', 'tag', 'code', '<code>'
+        when exit_mk
+          send stamp d
+          send XXX_new_token '^æ1^', d, 'html', 'tag', 'code', '</code>'
+        else
+          send d
+      return null
+
+  #---------------------------------------------------------------------------------------------------------
+  $parse_md_star: ({ star1_tid }) ->
+    ### TAINT use CFG pattern ###
+    #.......................................................................................................
+    within =
+      one:    false
+    start_of =
+      one:    null
+    #.......................................................................................................
+    enter = ( mode, start ) ->
+      within[   mode ] = true
+      start_of[ mode ] = start
+      return null
+    enter.one = ( start ) -> enter 'one', start
+    #.......................................................................................................
+    exit = ( mode ) ->
+      within[   mode ] = false
+      start_of[ mode ] = null
+      return null
+    exit.one = -> exit 'one'
+    #.......................................................................................................
+    return ( d, send ) ->
+      switch d.tid
+        #...................................................................................................
+        when star1_tid
+          send stamp d
+          if within.one then  exit.one();         send XXX_new_token '^æ1^', d, 'html', 'tag', 'i', '</i>'
+          else                enter.one d.start;  send XXX_new_token '^æ2^', d, 'html', 'tag', 'i', '<i>'
+        #...................................................................................................
+        else send d
+      return null
 
 
 
-#=========================================================================================================
+#===========================================================================================================
 class Hypedown_parser
 
   #---------------------------------------------------------------------------------------------------------
   constructor: ( cfg ) ->
     @types        = get_base_types()
-    @cfg          = Object.freeze @types.create.hd_constructor_cfg cfg
-    # @start()
-    # @base_mode    = null
-    # @registry     = {}
-    # @_metachr     = '𝔛' # used for identifying group keys
-    # @_metachrlen  = @_metachr.length
-    # @jump_symbol  = jump_symbol
-    lexer = new_hypedown_lexer 'md'
-    show_lexer_as_table "toy MD lexer", lexer
-    p     = new Pipeline()
-    p.push ( d, send ) ->
-      return send d unless d.tid is 'p'
-      send e for e from lexer.walk d.value
-    p.push $parse_md_star 'star1'
-    p.push $parse_md_codespan 'base', 'codespan', 'codespan', 'codespan'
-    p.lexer = lexer
+    @cfg          = Object.freeze @types.create.hd_parser_cfg cfg
+    @lexer        = new Hypedown_lexer { mode: 'standard', }
+    # debug '^234^', @lexer
+    @_build_pipeline()
     return undefined
+
+  #---------------------------------------------------------------------------------------------------------
+  _build_pipeline: ->
+    tfs       = new Hypedown_transforms()
+    @pipeline = new Pipeline()
+    @pipeline.push ( d, send ) =>
+      return send d unless d.tid is 'p'
+      send e for e from @lexer.walk d.value
+    @pipeline.push tfs.$parse_md_star { star1_tid: 'star1', }
+    @pipeline.push tfs.$parse_md_codespan { \
+      outer_mode: 'standard', enter_tid: 'codespan', inner_mode: 'codespan', exit_tid: 'codespan', }
+    return null
+
+  #---------------------------------------------------------------------------------------------------------
+  send: ( P... ) -> @pipeline.send P...
+  run:  ( P... ) -> @pipeline.run  P...
+  walk: ( P... ) -> @pipeline.walk P...
+  step: ( P... ) -> @pipeline.step P...
 
 
 #===========================================================================================================
 module.exports = {
+  XXX_new_token
   Interlex
   Syntax
   Standard_sx
   Markdown_sx
+  Hypedown_lexer
   Hypedown_parser }

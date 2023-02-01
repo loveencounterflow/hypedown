@@ -30,7 +30,13 @@ get_base_types = ->
   base_types                = new Intertype()
   { declare }               = base_types
   #.........................................................................................................
-  declare.hd_constructor_cfg
+  declare.hd_parser_cfg
+    fields:
+      foo:      'boolean'
+    default:
+      foo:      true
+  #.........................................................................................................
+  declare.hd_lexer_cfg
     fields:
       foo:      'boolean'
     default:
