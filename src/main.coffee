@@ -194,7 +194,7 @@ class Hypedown_parser
       send e for e from @lexer.walk d.value
     @pipeline.push tfs.$parse_md_star { star1_tid: 'star1', }
     @pipeline.push tfs.$parse_md_codespan { \
-      outer_mode: 'standard', enter_tid: 'codespan', inner_mode: 'codespan', exit_tid: 'codespan', }
+      outer_mode: 'standard', enter_tid: 'codespan', inner_mode: 'cspan', exit_tid: 'codespan', }
     return null
 
   #---------------------------------------------------------------------------------------------------------
