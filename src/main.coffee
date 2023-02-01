@@ -122,7 +122,7 @@ class Hypedown_lexer extends Interlex
 class Hypedown_transforms
 
   #---------------------------------------------------------------------------------------------------------
-  $parse_md_codespan: ( outer_mode, enter_tid, inner_mode, exit_tid ) ->
+  $parse_md_codespan: ({ outer_mode, enter_tid, inner_mode, exit_tid }) ->
     ### TAINT use CFG pattern ###
     ### TAINT use API for `mode:key` IDs ###
     enter_mk  = "#{outer_mode}:#{enter_tid}"
