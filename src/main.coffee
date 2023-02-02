@@ -101,6 +101,8 @@ class Markdown_sx extends Syntax
 
   #---------------------------------------------------------------------------------------------------------
   @lx_star1:  /(?<!\*)\*(?!\*)/u
+  @lx_star2:  /(?<!\*)\*\*(?!\*)/u
+  @lx_star3:  /(?<!\*)\*\*\*(?!\*)/u
 
 
 #===========================================================================================================
@@ -171,6 +173,75 @@ class Hypedown_transforms
         else send d
       return null
 
+  #---------------------------------------------------------------------------------------------------------
+  $parse_md_stars: ({ star1_tid, star2_tid, star3_tid, }) ->
+    within =
+      one:    false
+      two:    false
+    start_of =
+      one:    null
+      two:    null
+    #.......................................................................................................
+    enter = ( mode, start ) ->
+      within[   mode ] = true
+      start_of[ mode ] = start
+      return null
+    enter.one = ( start ) -> enter 'one', start
+    enter.two = ( start ) -> enter 'two', start
+    #.......................................................................................................
+    exit = ( mode ) ->
+      within[   mode ] = false
+      start_of[ mode ] = null
+      return null
+    exit.one = -> exit 'one'
+    exit.two = -> exit 'two'
+    #.......................................................................................................
+    return ( d, send ) ->
+      switch d.tid
+        #...................................................................................................
+        when star1_tid
+          send stamp d
+          if within.one then  exit.one();         send XXX_new_token '^æ1^', d, 'html', 'tag', 'i', '</i>'
+          else                enter.one d.start;  send XXX_new_token '^æ2^', d, 'html', 'tag', 'i', '<i>'
+        #...................................................................................................
+        when star2_tid
+          send stamp d
+          if within.two
+            if within.one
+              if start_of.one > start_of.two
+                exit.one();         send XXX_new_token '^æ3^', d, 'html', 'tag', 'i', '</i>'
+                exit.two();         send XXX_new_token '^æ4^', d, 'html', 'tag', 'b', '</b>'
+                enter.one d.start;  send XXX_new_token '^æ5^', d, 'html', 'tag', 'i', '<i>'
+              else
+                exit.two();         send XXX_new_token '^æ6^', d, 'html', 'tag', 'b', '</b>'
+            else
+              exit.two();         send XXX_new_token '^æ7^', d, 'html', 'tag', 'b', '</b>'
+          else
+            enter.two d.start;  send XXX_new_token '^æ8^', d, 'html', 'tag', 'b', '<b>'
+        #...................................................................................................
+        when star3_tid
+          send stamp d
+          if within.one
+            if within.two
+              if start_of.one > start_of.two
+                exit.one();       send XXX_new_token '^æ9^', d, 'html', 'tag', 'i', '</i>'
+                exit.two();       send XXX_new_token '^æ10^', d, 'html', 'tag', 'b', '</b>'
+              else
+                exit.two();       send XXX_new_token '^æ11^', d, 'html', 'tag', 'b', '</b>'
+                exit.one();       send XXX_new_token '^æ12^', d, 'html', 'tag', 'i', '</i>'
+            else
+              exit.one();         send XXX_new_token '^æ13^', d, 'html', 'tag', 'i', '</i>'
+              enter.two d.start;  send XXX_new_token '^æ14^', d, 'html', 'tag', 'b', '<b>'
+          else
+            if within.two
+              exit.two();         send XXX_new_token '^æ15^', d, 'html', 'tag', 'b', '</b>'
+              enter.one d.start;  send XXX_new_token '^æ16^', d, 'html', 'tag', 'i', '<i>'
+            else
+              enter.two d.start;  send XXX_new_token '^æ17^', d, 'html', 'tag', 'b', '<b>'
+              enter.one d.start + 2;  send XXX_new_token '^æ18^', { start: d.start + 2, stop: d.stop, }, 'html', 'tag', 'i', '<i>'
+        #...................................................................................................
+        else send d
+      return null
 
 
 #===========================================================================================================
@@ -192,7 +263,8 @@ class Hypedown_parser
     @pipeline.push ( d, send ) =>
       return send d unless d.tid is 'p'
       send e for e from @lexer.walk d.value
-    @pipeline.push tfs.$parse_md_star { star1_tid: 'star1', }
+    # @pipeline.push tfs.$parse_md_star { star1_tid: 'star1', }
+    @pipeline.push tfs.$parse_md_stars { star1_tid: 'star1', star2_tid: 'star2', star3_tid: 'star3', }
     @pipeline.push tfs.$parse_md_codespan { \
       outer_mode: 'standard', enter_tid: 'codespan', inner_mode: 'cspan', exit_tid: 'codespan', }
     return null
