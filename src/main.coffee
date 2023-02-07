@@ -24,11 +24,11 @@ GUY                       = require 'guy'
 #...........................................................................................................
 { new_datom
   lets
-  stamp     }             = DATOM
+  stamp }                = DATOM
 #...........................................................................................................
-{ Pipeline,         \
-  $,
-  transforms, }           = require 'moonriver'
+{ Pipeline
+  $
+  transforms }            = require 'moonriver'
 #...........................................................................................................
 { Interlex
   Syntax
@@ -38,7 +38,16 @@ GUY                       = require 'guy'
   jump_symbol
   get_base_types }        = require './types'
 E                         = require './errors'
+types                     = new ( require 'intertype' ).Intertype
+{ Hypedown_transforms_stars } \
+                          = require './_hypedown-transforms-stars'
 
+
+#-----------------------------------------------------------------------------------------------------------
+select_token = ( token, selector ) ->
+  return false unless token?
+  return false if token.$stamped ? false
+  return token.mk is selector
 
 #-----------------------------------------------------------------------------------------------------------
 XXX_new_token = ( ref, token, mode, tid, name, value, start, stop, x = null, lexeme = null ) ->
@@ -57,9 +66,9 @@ class Standard_sx extends Syntax
   @mode: 'standard'
 
   #---------------------------------------------------------------------------------------------------------
-  @lx_backslash_escape:  { tid: 'escchr', jump: null, pattern: /\\(?<chr>.)/u, }
+  @lx_backslash_escape:  { tid: 'escchr', jump: null, pattern: /\\(?<chr>.)/u, reserved: '\\', }
   ### TAINT use 'forbidden chrs' (to be implemented) ###
-  @lx_catchall:          { tid: 'other',  jump: null, pattern: /[^*`\\]+/u, }
+  # @lx_catchall:          { tid: 'other',  jump: null, pattern: /[^*`\\#]+/u, }
 
   # @lx_foo: 'foo'
   # @lx_bar: /bar/
@@ -94,15 +103,22 @@ class Markdown_sx extends Syntax
     #.......................................................................................................
     # info '^3531^', @cfg
     return [
-      { mode: @cfg.mode,          tid: 'codespan',  jump: entry_handler,  pattern:  /(?<!`)`+(?!`)/u,   }
-      { mode: @cfg.codespan_mode, tid: 'codespan',  jump: exit_handler,   pattern:  /(?<!`)`+(?!`)/u,   }
-      { mode: @cfg.codespan_mode, tid: 'text',      jump: null,           pattern:  /(?:\\`|[^`])+/u,   }
+      { mode: @cfg.mode,          tid: 'codespan',  jump: entry_handler,  pattern:  /(?<!`)`+(?!`)/u, reserved: '`', }
+      { mode: @cfg.codespan_mode, tid: 'codespan',  jump: exit_handler,   pattern:  /(?<!`)`+(?!`)/u, reserved: '`', }
+      ### NOTE this could be produced with `lexer.add_catchall_lexeme()` ###
+      { mode: @cfg.codespan_mode, tid: 'text',      jump: null,           pattern:  /(?:\\`|[^`])+/u,  }
       ]
+
+  #---------------------------------------------------------------------------------------------------------
+  @lx_nl:  /$/u
 
   #---------------------------------------------------------------------------------------------------------
   @lx_star1:  /(?<!\*)\*(?!\*)/u
   @lx_star2:  /(?<!\*)\*\*(?!\*)/u
   @lx_star3:  /(?<!\*)\*\*\*(?!\*)/u
+
+  #---------------------------------------------------------------------------------------------------------
+  @lx_hashes:  /^(?<text>#{1,6})($|\s+)/u
 
 
 #===========================================================================================================
@@ -110,19 +126,62 @@ class Hypedown_lexer extends Interlex
 
   #---------------------------------------------------------------------------------------------------------
   constructor: ->
-    super { dotall: false, }
+    super { catchall_concat: true, reserved_concat: true, }
     standard_sx       = new Standard_sx()
     markdown_sx       = new Markdown_sx { mode: 'standard', codespan_mode: 'cspan', }
     lexemes_lst       = []
     standard_sx.add_lexemes lexemes_lst
     markdown_sx.add_lexemes lexemes_lst
     @add_lexeme lexeme for lexeme in lexemes_lst
+    @add_catchall_lexeme { mode: 'standard', }
+    @add_reserved_lexeme { mode: 'standard', }
     return undefined
 
 
 #===========================================================================================================
-class Hypedown_transforms
+### TAINT temporary quick fix solution; might use mixins or similar in the future ###
+class Hypedown_transforms extends Hypedown_transforms_stars
 
+
+  #=========================================================================================================
+  # PREPARATION
+  #---------------------------------------------------------------------------------------------------------
+  $inject_virtual_nl: ->
+    ### normalize start of document by injecting two newlines. ###
+    is_first  = true
+    mode      = 'standard'
+    tid       = 'nl'
+    mk        = "#{mode}:#{tid}"
+    return ( d, send ) ->
+      return send d unless is_first
+      is_first = false
+      send { mode, tid, mk, jump: null, value: '', start: 0, stop: 0, \
+        x: { virtual: true, }, $key: '^standard', $: 'inject_virtual_nl', }
+      send { mode, tid, mk, jump: null, value: '', start: 0, stop: 0, \
+        x: { virtual: true, }, $key: '^standard', $: 'inject_virtual_nl', }
+      send d
+
+  #---------------------------------------------------------------------------------------------------------
+  $add_parbreak_markers: -> ### needs inject_virtual_nl ###
+    is_first  = true
+    mode      = 'standard'
+    mk        = "standard:nl"
+    p         = new Pipeline()
+    p.push window = transforms.$window { min: -2, max: 0, empty: null, }
+    p.push add_parbreak_markers = ( [ lookbehind, previous, current, ], send ) ->
+      send current
+      # debug '^98-75^', mk, ( lookbehind?.mk ? '---' ), ( previous?.mk ? '---' ), ( previous?.mk ? '---' ), ( select_token previous, mk ), ( select_token current, mk )
+      return if ( select_token lookbehind, mk )
+      return unless ( select_token previous, mk ) and ( select_token current, mk )
+      # unless d.mk is mk
+      send { \
+        mode, tid: 'p', mk: "#{mode}:p", jump: null, value: '', start: 0, stop: 0, \
+        $key: '^standard', $: 'add_parbreak_markers', }
+    return p
+
+
+  #=========================================================================================================
+  # PREPARATION
   #---------------------------------------------------------------------------------------------------------
   $parse_md_codespan: ({ outer_mode, enter_tid, inner_mode, exit_tid }) ->
     ### TAINT use CFG pattern ###
@@ -133,115 +192,70 @@ class Hypedown_transforms
       switch d.mk
         when enter_mk
           send stamp d
-          send XXX_new_token '^æ2^', d, 'html', 'tag', 'code', '<code>'
+          send XXX_new_token 'parse_md_codespan', d, 'html', 'tag', 'code', '<code>'
         when exit_mk
           send stamp d
-          send XXX_new_token '^æ1^', d, 'html', 'tag', 'code', '</code>'
+          send XXX_new_token 'parse_md_codespan', d, 'html', 'tag', 'code', '</code>'
         else
           send d
       return null
 
   #---------------------------------------------------------------------------------------------------------
-  $parse_md_star: ({ star1_tid }) ->
-    ### TAINT use CFG pattern ###
-    #.......................................................................................................
-    within =
-      one:    false
-    start_of =
-      one:    null
-    #.......................................................................................................
-    enter = ( mode, start ) ->
-      within[   mode ] = true
-      start_of[ mode ] = start
-      return null
-    enter.one = ( start ) -> enter 'one', start
-    #.......................................................................................................
-    exit = ( mode ) ->
-      within[   mode ] = false
-      start_of[ mode ] = null
-      return null
-    exit.one = -> exit 'one'
-    #.......................................................................................................
+  $parse_md_hashes: ({ mode, tid, }) ->
+    mode         ?= 'standard'
+    tid          ?= 'hashes'
+    hashes_mk     = "#{mode}:#{tid}"
+    prv_was_empty = false
     return ( d, send ) ->
-      switch d.tid
-        #...................................................................................................
-        when star1_tid
-          send stamp d
-          if within.one then  exit.one();         send XXX_new_token '^æ1^', d, 'html', 'tag', 'i', '</i>'
-          else                enter.one d.start;  send XXX_new_token '^æ2^', d, 'html', 'tag', 'i', '<i>'
-        #...................................................................................................
-        else send d
+      return send d unless d.mk is hashes_mk
+      send stamp d
+      name = "h#{d.x.text.length}"
+      send XXX_new_token 'parse_md_hashes', d, 'html', 'tag', name, "<#{name}>"
       return null
 
+
+  #=========================================================================================================
+  # FINALIZATION
   #---------------------------------------------------------------------------------------------------------
-  $parse_md_stars: ({ star1_tid, star2_tid, star3_tid, }) ->
-    within =
-      one:    false
-      two:    false
-    start_of =
-      one:    null
-      two:    null
-    #.......................................................................................................
-    enter = ( mode, start ) ->
-      within[   mode ] = true
-      start_of[ mode ] = start
-      return null
-    enter.one = ( start ) -> enter 'one', start
-    enter.two = ( start ) -> enter 'two', start
-    #.......................................................................................................
-    exit = ( mode ) ->
-      within[   mode ] = false
-      start_of[ mode ] = null
-      return null
-    exit.one = -> exit 'one'
-    exit.two = -> exit 'two'
-    #.......................................................................................................
+  $generate_p_tags: ({ mode, tid }) -> ### precedes generate_html_nls, needs add_parbreak_markers ###
+    ### NOTE
+
+    * https://stackoverflow.com/questions/8460993/p-end-tag-p-is-not-needed-in-html
+
+    For the time being we opt for *not* using closing `</p>` tags, the reason for this being that they are
+    not required by HTML5, and it *may* (just may) make things easier down the line when the closing tag is
+    made implicit. However, observe that the very similar `<div>` tag still has to be closed explicitly.
+
+    ###
+    mk        = "#{mode}:#{tid}"
     return ( d, send ) ->
-      switch d.tid
-        #...................................................................................................
-        when star1_tid
-          send stamp d
-          if within.one then  exit.one();         send XXX_new_token '^æ1^', d, 'html', 'tag', 'i', '</i>'
-          else                enter.one d.start;  send XXX_new_token '^æ2^', d, 'html', 'tag', 'i', '<i>'
-        #...................................................................................................
-        when star2_tid
-          send stamp d
-          if within.two
-            if within.one
-              if start_of.one > start_of.two
-                exit.one();         send XXX_new_token '^æ3^', d, 'html', 'tag', 'i', '</i>'
-                exit.two();         send XXX_new_token '^æ4^', d, 'html', 'tag', 'b', '</b>'
-                enter.one d.start;  send XXX_new_token '^æ5^', d, 'html', 'tag', 'i', '<i>'
-              else
-                exit.two();         send XXX_new_token '^æ6^', d, 'html', 'tag', 'b', '</b>'
-            else
-              exit.two();         send XXX_new_token '^æ7^', d, 'html', 'tag', 'b', '</b>'
-          else
-            enter.two d.start;  send XXX_new_token '^æ8^', d, 'html', 'tag', 'b', '<b>'
-        #...................................................................................................
-        when star3_tid
-          send stamp d
-          if within.one
-            if within.two
-              if start_of.one > start_of.two
-                exit.one();       send XXX_new_token '^æ9^', d, 'html', 'tag', 'i', '</i>'
-                exit.two();       send XXX_new_token '^æ10^', d, 'html', 'tag', 'b', '</b>'
-              else
-                exit.two();       send XXX_new_token '^æ11^', d, 'html', 'tag', 'b', '</b>'
-                exit.one();       send XXX_new_token '^æ12^', d, 'html', 'tag', 'i', '</i>'
-            else
-              exit.one();         send XXX_new_token '^æ13^', d, 'html', 'tag', 'i', '</i>'
-              enter.two d.start;  send XXX_new_token '^æ14^', d, 'html', 'tag', 'b', '<b>'
-          else
-            if within.two
-              exit.two();         send XXX_new_token '^æ15^', d, 'html', 'tag', 'b', '</b>'
-              enter.one d.start;  send XXX_new_token '^æ16^', d, 'html', 'tag', 'i', '<i>'
-            else
-              enter.two d.start;  send XXX_new_token '^æ17^', d, 'html', 'tag', 'b', '<b>'
-              enter.one d.start + 2;  send XXX_new_token '^æ18^', { start: d.start + 2, stop: d.stop, }, 'html', 'tag', 'i', '<i>'
-        #...................................................................................................
-        else send d
-      return null
+      # debug '^generate_html_nls@1^', d
+      return send d unless d.mk is mk
+      send stamp d
+      send XXX_new_token 'generate_p_tags', d, 'html', 'text', '<p>', '<p>'
+
+  #---------------------------------------------------------------------------------------------------------
+  $capture_text: ->
+    mk        = "standard:#$catchall"
+    return ( d, send ) ->
+      return send d unless select_token d, mk
+      send stamp d
+      send XXX_new_token 'capture_text', d, 'html', 'text', d.value, d.value
+
+  #---------------------------------------------------------------------------------------------------------
+  $generate_html_nls: -> ### needs generate_p_tags ###
+    mk        = "standard:nl"
+    p         = new Pipeline()
+    p.push window           = transforms.$window { min: -2, max: 0, empty: null, }
+    p.push ( [ previous, current, next, ], send ) ->
+      debug '^generate_html_nls@1^', [ previous?.mk, previous?.value, ],[ current?.mk, current?.value, ],[ next?.mk, next?.value, ]
+      return unless current?
+      return send current
+      return send d unless d.mk is mk
+      send stamp d
+      return if d.x?.virtual ? false
+      send XXX_new_token 'generate_html_nls', d, 'html', 'text', '\n', '\n'
+    return p
 
 
 #===========================================================================================================
@@ -260,13 +274,20 @@ class Hypedown_parser
   _build_pipeline: ->
     tfs       = new Hypedown_transforms()
     @pipeline = new Pipeline()
-    @pipeline.push ( d, send ) =>
-      return send d unless d.tid is 'p'
-      send e for e from @lexer.walk d.value
-    # @pipeline.push tfs.$parse_md_star { star1_tid: 'star1', }
-    @pipeline.push tfs.$parse_md_stars { star1_tid: 'star1', star2_tid: 'star2', star3_tid: 'star3', }
+    @pipeline.push ( line, send ) =>
+      return send line unless types.isa.text line
+      # info '^211231^', rpr line
+      send token for token from @lexer.walk line
+    @pipeline.push tfs.$inject_virtual_nl()
+    @pipeline.push tfs.$add_parbreak_markers()
+    # @pipeline.push ( d ) -> urge '^965-1^', d
+    @pipeline.push tfs.$parse_md_stars()
+    @pipeline.push tfs.$parse_md_hashes { mode: 'standard', tid: 'hashes', }
     @pipeline.push tfs.$parse_md_codespan { \
       outer_mode: 'standard', enter_tid: 'codespan', inner_mode: 'cspan', exit_tid: 'codespan', }
+    @pipeline.push tfs.$capture_text()
+    @pipeline.push tfs.$generate_p_tags { mode: 'standard', tid: 'p', }
+    @pipeline.push tfs.$generate_html_nls { mode: 'standard', tid: 'nl', } ### NOTE removes virtual nl, should come late ###
     return null
 
   #---------------------------------------------------------------------------------------------------------
