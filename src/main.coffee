@@ -150,7 +150,7 @@ class Hypedown_transforms extends Hypedown_transforms_stars
       send XXX_new_token 'capture_text', d, 'html', 'text', d.value, d.value
 
   #---------------------------------------------------------------------------------------------------------
-  $generate_p_tags: -> ### needs add_parbreak_markers, capture_text ###
+  $generate_missing_p_tags: -> ### needs add_parbreak_markers, capture_text ###
     ### NOTE
 
     * https://stackoverflow.com/questions/8460993/p-end-tag-p-is-not-needed-in-html
@@ -164,7 +164,7 @@ class Hypedown_transforms extends Hypedown_transforms_stars
     html_text_lx  = "html:text"
     p             = new Pipeline()
     p.push window = transforms.$window { min: -1, max: +1, empty: null, }
-    p.push generate_p_tags = ( [ prv, d, nxt, ], send ) ->
+    p.push generate_missing_p_tags = ( [ prv, d, nxt, ], send ) ->
       ### TAINT not a correct solution, paragraph could begin with an inline element, so better check for
       nxt being namespace `html`, followed by any content category of `<p>` (i.e. Phrasing Content)
 
@@ -172,7 +172,7 @@ class Hypedown_transforms extends Hypedown_transforms_stars
       https://developer.mozilla.org/en-US/docs/Web/HTML/Content_categories#phrasing_content ###
       return send d unless select_token prv,  parbreak_lx
       return send d unless select_token nxt,  html_text_lx
-      send XXX_new_token 'generate_p_tags', d, 'html', 'text', '<p>', '<p>'
+      send XXX_new_token 'generate_missing_p_tags', d, 'html', 'text', '<p>', '<p>'
       send d
     return p
 
@@ -220,7 +220,7 @@ class Hypedown_parser
     @pipeline.push tfs.$parse_md_codespan { \
       outer_mode: 'standard', enter_tid: 'codespan', inner_mode: 'cspan', exit_tid: 'codespan', }
     @pipeline.push tfs.$capture_text()
-    @pipeline.push tfs.$generate_p_tags()
+    @pipeline.push tfs.$generate_missing_p_tags()
     @pipeline.push tfs.$generate_html_nls { mode: 'standard', tid: 'nl', } ### NOTE removes virtual nl, should come late ###
     return null
 
