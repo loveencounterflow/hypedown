@@ -85,20 +85,23 @@ class Hypedown_transforms extends Hypedown_transforms_stars
 
   #---------------------------------------------------------------------------------------------------------
   $add_parbreak_markers: -> ### needs inject_virtual_nl ###
-    is_first  = true
-    mode      = 'standard'
-    mk        = "standard:nl"
-    p         = new Pipeline()
+    mode        = 'standard'
+    newline_lx  = "#{mode}:nl"
+    tid         = 'parbreak'
+    mk          = "#{mode}:#{tid}"
+    p           = new Pipeline()
+    template    = { \
+        mode, tid, mk, value: '', start: 0, stop: 0, \
+        $key: '^standard', $: 'add_parbreak_markers', }
     p.push window = transforms.$window { min: -2, max: 0, empty: null, }
     p.push add_parbreak_markers = ( [ lookbehind, previous, current, ], send ) ->
+      return send current unless ( select_token lookbehind,  newline_lx )
+      return send current unless ( select_token previous,    newline_lx )
+      return send current if     ( select_token current,     newline_lx )
+      { start
+        stop  } = current
+      send { template..., start, stop, }
       send current
-      # debug '^98-75^', mk, ( lookbehind?.mk ? '---' ), ( previous?.mk ? '---' ), ( previous?.mk ? '---' ), ( select_token previous, mk ), ( select_token current, mk )
-      return if ( select_token lookbehind, mk )
-      return unless ( select_token previous, mk ) and ( select_token current, mk )
-      # unless d.mk is mk
-      send { \
-        mode, tid: 'p', mk: "#{mode}:p", jump: null, value: '', start: 0, stop: 0, \
-        $key: '^standard', $: 'add_parbreak_markers', }
     return p
 
 
@@ -139,7 +142,15 @@ class Hypedown_transforms extends Hypedown_transforms_stars
   #=========================================================================================================
   # FINALIZATION
   #---------------------------------------------------------------------------------------------------------
-  $generate_p_tags: ({ mode, tid }) -> ### precedes generate_html_nls, needs add_parbreak_markers ###
+  $capture_text: ->
+    catchall_lx = "standard:$catchall"
+    return ( d, send ) ->
+      return send d unless select_token d, catchall_lx
+      send stamp d
+      send XXX_new_token 'capture_text', d, 'html', 'text', d.value, d.value
+
+  #---------------------------------------------------------------------------------------------------------
+  $generate_p_tags: -> ### needs add_parbreak_markers, capture_text ###
     ### NOTE
 
     * https://stackoverflow.com/questions/8460993/p-end-tag-p-is-not-needed-in-html
@@ -149,20 +160,21 @@ class Hypedown_transforms extends Hypedown_transforms_stars
     made implicit. However, observe that the very similar `<div>` tag still has to be closed explicitly.
 
     ###
-    mk        = "#{mode}:#{tid}"
-    return ( d, send ) ->
-      # debug '^generate_html_nls@1^', d
-      return send d unless d.mk is mk
-      send stamp d
-      send XXX_new_token 'generate_p_tags', d, 'html', 'text', '<p>', '<p>'
+    parbreak_lx   = "standard:parbreak"
+    html_text_lx  = "html:text"
+    p             = new Pipeline()
+    p.push window = transforms.$window { min: -1, max: +1, empty: null, }
+    p.push generate_p_tags = ( [ prv, d, nxt, ], send ) ->
+      ### TAINT not a correct solution, paragraph could begin with an inline element, so better check for
+      nxt being namespace `html`, followed by any content category of `<p>` (i.e. Phrasing Content)
 
-  #---------------------------------------------------------------------------------------------------------
-  $capture_text: ->
-    mk        = "standard:#$catchall"
-    return ( d, send ) ->
-      return send d unless select_token d, mk
-      send stamp d
-      send XXX_new_token 'capture_text', d, 'html', 'text', d.value, d.value
+      see https://developer.mozilla.org/en-US/docs/Web/HTML/Element/p?retiredLocale=de,
+      https://developer.mozilla.org/en-US/docs/Web/HTML/Content_categories#phrasing_content ###
+      return send d unless select_token prv,  parbreak_lx
+      return send d unless select_token nxt,  html_text_lx
+      send XXX_new_token 'generate_p_tags', d, 'html', 'text', '<p>', '<p>'
+      send d
+    return p
 
   #---------------------------------------------------------------------------------------------------------
   $generate_html_nls: -> ### needs generate_p_tags ###
@@ -170,7 +182,7 @@ class Hypedown_transforms extends Hypedown_transforms_stars
     p         = new Pipeline()
     p.push window           = transforms.$window { min: -2, max: 0, empty: null, }
     p.push ( [ previous, current, next, ], send ) ->
-      debug '^generate_html_nls@1^', [ previous?.mk, previous?.value, ],[ current?.mk, current?.value, ],[ next?.mk, next?.value, ]
+      # debug '^generate_html_nls@1^', [ previous?.mk, previous?.value, ],[ current?.mk, current?.value, ],[ next?.mk, next?.value, ]
       return unless current?
       return send current
       return send d unless d.mk is mk
@@ -208,7 +220,7 @@ class Hypedown_parser
     @pipeline.push tfs.$parse_md_codespan { \
       outer_mode: 'standard', enter_tid: 'codespan', inner_mode: 'cspan', exit_tid: 'codespan', }
     @pipeline.push tfs.$capture_text()
-    @pipeline.push tfs.$generate_p_tags { mode: 'standard', tid: 'p', }
+    @pipeline.push tfs.$generate_p_tags()
     @pipeline.push tfs.$generate_html_nls { mode: 'standard', tid: 'nl', } ### NOTE removes virtual nl, should come late ###
     return null
 
