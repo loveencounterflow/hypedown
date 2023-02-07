@@ -177,15 +177,10 @@ class Hypedown_transforms extends Hypedown_transforms_stars
     return p
 
   #---------------------------------------------------------------------------------------------------------
-  $generate_html_nls: -> ### needs generate_p_tags ###
-    mk        = "standard:nl"
-    p         = new Pipeline()
-    p.push window           = transforms.$window { min: -2, max: 0, empty: null, }
-    p.push ( [ previous, current, next, ], send ) ->
-      # debug '^generate_html_nls@1^', [ previous?.mk, previous?.value, ],[ current?.mk, current?.value, ],[ next?.mk, next?.value, ]
-      return unless current?
-      return send current
-      return send d unless d.mk is mk
+  $generate_html_nls: -> ### needs generate_missing_p_tags ###
+    newline_lx = "standard:nl"
+    return generate_html_nls = ( d, send ) ->
+      return send d unless select_token d, newline_lx
       send stamp d
       return if d.x?.virtual ? false
       send XXX_new_token 'generate_html_nls', d, 'html', 'text', '\n', '\n'
