@@ -20,7 +20,7 @@
   "author": "",
   "dependencies": {
     "datom": "^11.0.0",
-    "guy": "^12.10.0",
+    "guy": "^13.0.0",
     "intertext-lexer": "^0.2.0",
     "intertype": "^0.111.0",
     "moonriver": "^4.0.0"
