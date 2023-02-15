@@ -9,6 +9,8 @@
 
 - [Design Goals](#design-goals)
 - [HypeDown: A MarkDown-like Text Formatting Language](#hypedown-a-markdown-like-text-formatting-language)
+- [Notes](#notes)
+  - [Including and Inserting](#including-and-inserting)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -304,4 +306,21 @@ These goals motivated the following decisions:
 * **Hype**rtext Mark**Down**—an extensible subset of [MarkDown](https://commonmark.org) with an extensible
   superset of [HTML5](https://developer.mozilla.org/en-US/docs/Web/HTML)
 
+
+
+## Notes
+
+### Including and Inserting
+
+* `<include/>` with mandatory attribute `path` reads the referenced file and puts the definitions
+  (declarations) of that file in a namespace (prefix) that defaults the the file's name
+  * it is an error to refer multiple times to a file with the same name without giving explicit and distinct
+    prefixes, so `<include path=./one-directory/f.hd/><include path=./other-directory/f.hd/>` is an error
+    that can be resolved by writing `<include path=./one-directory/f.hd/><include prefix=g
+    path=./other-directory/f.hd/>` or by explicitly allowing `overwrite` (`<include
+    path=./one-directory/f.hd/><include overwrite path=./other-directory/f.hd/>`)
+  * renderable content of an `<include/>`d file will *not* be shown unless the `render` attribute is set;
+    alternatively, use `<insert/>`
+* `<insert path='...'/>` inserts the renderable content of another file; equivalent to `<include path='...'
+  render='true'/>`; optionally with `prefix`
 
