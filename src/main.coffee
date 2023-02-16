@@ -207,6 +207,7 @@ class Hypedown_parser
       return send line unless @types.isa.text line
       # info '^211231^', rpr line
       send token for token from @lexer.walk line
+      return null
     @pipeline.push tfs.$inject_virtual_nl()
     @pipeline.push tfs.$add_parbreak_markers()
     # @pipeline.push ( d ) -> urge '^965-1^', d
