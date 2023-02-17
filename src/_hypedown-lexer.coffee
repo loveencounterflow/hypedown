@@ -102,7 +102,8 @@ class Hypedown_lexer extends Interlex
 
   #---------------------------------------------------------------------------------------------------------
   constructor: ->
-    super { catchall_concat: true, reserved_concat: true, }
+    super { linewise: true, catchall_concat: true, reserved_concat: true, }
+    _TEMP_add_lexemes @
     standard_sx       = new Standard_sx()
     markdown_sx       = new Markdown_sx { mode: 'standard', codespan_mode: 'cspan', }
     lexemes_lst       = []
@@ -113,9 +114,86 @@ class Hypedown_lexer extends Interlex
     @add_reserved_lexeme { mode: 'standard', }
     return undefined
 
+#-----------------------------------------------------------------------------------------------------------
+_TEMP_add_lexemes = ( lexer ) ->
+  # lexer.add_lexeme { mode, tid: 'eol',      pattern: ( /$/u  ), }
+  #.........................................................................................................
+  new_escchr_descriptor = ( mode ) ->
+    create = ( token ) ->
+      token.x = { chr: '\n', } unless ( token.x?.chr )?
+      return token
+    return { mode, tid: 'escchr', pattern: /\\(?<chr>.|$)/u, reserved: '\\', create, }
+  #.........................................................................................................
+  new_nl_descriptor = ( mode ) ->
+    ### TAINT consider to force value by setting it in descriptor (needs interlex update) ###
+    create = ( token ) ->
+      token.value = '\n'
+      return token
+    return { mode, tid: 'nl', pattern: /$/u, create, }
+  #.........................................................................................................
+  do =>
+    mode = 'plain'
+    lexer.add_lexeme new_escchr_descriptor  mode
+    lexer.add_lexeme new_nl_descriptor      mode
+    lexer.add_lexeme { mode,  tid: 'amp',       jump: 'xncr',     pattern: /&(?=[^\s\\]+;)/, reserved: '&', } # only match if ahead of (no ws, no bslash) + semicolon
+    lexer.add_lexeme { mode,  tid: 'slash',     jump: null,       pattern: '/',     reserved: '/', }
+    lexer.add_lexeme { mode,  tid: 'ltbang',    jump: 'comment',  pattern: '<!--',  reserved: '<', }
+    lexer.add_lexeme { mode,  tid: 'lt',        jump: 'tag',      pattern: '<',     reserved: '<', }
+    lexer.add_lexeme { mode,  tid: 'ws',        jump: null,       pattern: /\s+/u, }
+    lexer.add_catchall_lexeme { mode, tid: 'other', }
+    lexer.add_reserved_lexeme { mode, tid: 'forbidden', }
+  #.........................................................................................................
+  do =>
+    mode = 'xncr'
+    # lexer.add_lexeme new_escchr_descriptor  mode
+    # lexer.add_lexeme new_nl_descriptor      mode
+    lexer.add_lexeme { mode,  tid: 'csg',       jump: null,     pattern: /(?<=&)[^\s;#\\]+(?=#)/u, } # character set sigil (non-standard)
+    lexer.add_lexeme { mode,  tid: 'name',      jump: null,     pattern: /(?<=&)[^\s;#\\]+(?=;)/u, } # name of named entity
+    lexer.add_lexeme { mode,  tid: 'dec',       jump: null,     pattern: /#(?<nr>[0-9]+)(?=;)/u, }
+    lexer.add_lexeme { mode,  tid: 'hex',       jump: null,     pattern: /#(?:x|X)(?<nr>[0-9a-fA-F]+)(?=;)/u, }
+    lexer.add_lexeme { mode,  tid: 'sc',        jump: '^',      pattern: /;/u, }
+    lexer.add_lexeme { mode,  tid: '$error',    jump: '^',      pattern: /.|$/u, }
+  #.........................................................................................................
+  do =>
+    mode = 'tag'
+    lexer.add_lexeme new_escchr_descriptor  mode
+    lexer.add_lexeme new_nl_descriptor      mode
+    # lexer.add_lexeme { mode,  tid: 'tagtext',   jump: null,       pattern: ( /[^\/>]+/u ), }
+    lexer.add_lexeme { mode,  tid: 'dq',        jump: 'tag:dq',   pattern: '"',       reserved: '"' }
+    lexer.add_lexeme { mode,  tid: 'sq',        jump: 'tag:sq',   pattern: "'",       reserved: "'" }
+    lexer.add_lexeme { mode,  tid: 'slashgt',   jump: '^',        pattern: '/>',      reserved: [ '>', '/', ] }
+    lexer.add_lexeme { mode,  tid: 'slash',     jump: '^',        pattern: '/',       reserved: '/', }
+    lexer.add_lexeme { mode,  tid: 'gt',        jump: '^',        pattern: '>',       reserved: '>', }
+    lexer.add_catchall_lexeme { mode, tid: 'text', }
+    lexer.add_reserved_lexeme { mode, tid: 'forbidden', }
+  #.........................................................................................................
+  do =>
+    mode = 'tag:dq'
+    lexer.add_lexeme new_escchr_descriptor  mode
+    lexer.add_lexeme new_nl_descriptor      mode
+    lexer.add_lexeme { mode,  tid: 'dq',        jump: '^',        pattern: '"',       reserved: '"', }
+    lexer.add_catchall_lexeme { mode, tid: 'text', }
+  #.........................................................................................................
+  do =>
+    mode = 'tag:sq'
+    lexer.add_lexeme new_escchr_descriptor  mode
+    lexer.add_lexeme new_nl_descriptor      mode
+    lexer.add_lexeme { mode,  tid: 'sq',        jump: '^',        pattern: "'",       reserved: "'", }
+    lexer.add_catchall_lexeme { mode, tid: 'text', }
+  #.........................................................................................................
+  do =>
+    mode = 'comment'
+    lexer.add_lexeme new_escchr_descriptor  mode
+    lexer.add_lexeme new_nl_descriptor      mode
+    lexer.add_lexeme { mode, tid: 'eoc',       jump: '^',         pattern:  '-->',    reserved: '--',  }
+    lexer.add_catchall_lexeme { mode, tid: 'text', }
+    lexer.add_reserved_lexeme { mode, tid: 'forbidden', }
+  return null
+
 
 #===========================================================================================================
 module.exports = {
+  _TEMP_add_lexemes
   Markdown_sx
   Standard_sx
   Hypedown_lexer }
