@@ -65,28 +65,28 @@ class Hypedown_transforms extends Hypedown_transforms_stars
   $inject_virtual_nl: ->
     ### normalize start of document by injecting two newlines. ###
     is_first  = true
-    mode      = 'standard'
+    mode      = 'plain'
     tid       = 'nl'
     mk        = "#{mode}:#{tid}"
     return ( d, send ) ->
       return send d unless is_first
       is_first = false
       send { mode, tid, mk, jump: null, value: '', start: 0, stop: 0, \
-        x: { virtual: true, }, $key: '^standard', $: 'inject_virtual_nl', }
+        x: { virtual: true, }, $key: '^plain', $: 'inject_virtual_nl', }
       send { mode, tid, mk, jump: null, value: '', start: 0, stop: 0, \
-        x: { virtual: true, }, $key: '^standard', $: 'inject_virtual_nl', }
+        x: { virtual: true, }, $key: '^plain', $: 'inject_virtual_nl', }
       send d
 
   #---------------------------------------------------------------------------------------------------------
   $add_parbreak_markers: -> ### needs inject_virtual_nl ###
-    mode        = 'standard'
+    mode        = 'plain'
     newline_lx  = "#{mode}:nl"
     tid         = 'parbreak'
     mk          = "#{mode}:#{tid}"
     p           = new Pipeline()
     template    = { \
         mode, tid, mk, value: '', start: 0, stop: 0, \
-        $key: '^standard', $: 'add_parbreak_markers', }
+        $key: '^plain', $: 'add_parbreak_markers', }
     p.push window = transforms.$window { min: -2, max: 0, empty: null, }
     p.push add_parbreak_markers = ( [ lookbehind, previous, current, ], send ) ->
       return send current unless ( select_token lookbehind,  newline_lx )
@@ -121,7 +121,7 @@ class Hypedown_transforms extends Hypedown_transforms_stars
 
   #---------------------------------------------------------------------------------------------------------
   $parse_md_hashes: ({ mode, tid, }) ->
-    mode         ?= 'standard'
+    mode         ?= 'plain'
     tid          ?= 'hashes'
     hashes_mk     = "#{mode}:#{tid}"
     prv_was_empty = false
@@ -137,7 +137,7 @@ class Hypedown_transforms extends Hypedown_transforms_stars
   # FINALIZATION
   #---------------------------------------------------------------------------------------------------------
   $capture_text: ->
-    catchall_lx = "standard:$catchall"
+    catchall_lx = "plain:$catchall"
     return ( d, send ) ->
       return send d unless select_token d, catchall_lx
       send stamp d
@@ -154,7 +154,7 @@ class Hypedown_transforms extends Hypedown_transforms_stars
     made implicit. However, observe that the very similar `<div>` tag still has to be closed explicitly.
 
     ###
-    parbreak_lx   = "standard:parbreak"
+    parbreak_lx   = "plain:parbreak"
     html_text_lx  = "html:text"
     p             = new Pipeline()
     p.push window = transforms.$window { min: -1, max: +1, empty: null, }
@@ -172,7 +172,7 @@ class Hypedown_transforms extends Hypedown_transforms_stars
 
   #---------------------------------------------------------------------------------------------------------
   $generate_html_nls: -> ### needs generate_missing_p_tags ###
-    newline_lx = "standard:nl"
+    newline_lx = "plain:nl"
     return generate_html_nls = ( d, send ) ->
       return send d unless select_token d, newline_lx
       send stamp d
@@ -188,7 +188,7 @@ class Hypedown_parser
   constructor: ( cfg ) ->
     @types        = get_base_types()
     @cfg          = Object.freeze @types.create.hd_parser_cfg cfg
-    @lexer        = new Hypedown_lexer { mode: 'standard', }
+    @lexer        = new Hypedown_lexer { mode: 'plain', }
     # debug '^234^', @lexer
     @_build_pipeline()
     return undefined
@@ -206,12 +206,12 @@ class Hypedown_parser
     @pipeline.push tfs.$add_parbreak_markers()
     # @pipeline.push ( d ) -> urge '^965-1^', d
     @pipeline.push tfs.$parse_md_stars()
-    @pipeline.push tfs.$parse_md_hashes { mode: 'standard', tid: 'hashes', }
+    @pipeline.push tfs.$parse_md_hashes { mode: 'plain', tid: 'hashes', }
     @pipeline.push tfs.$parse_md_codespan { \
-      outer_mode: 'standard', enter_tid: 'codespan', inner_mode: 'cspan', exit_tid: 'codespan', }
+      outer_mode: 'plain', enter_tid: 'codespan', inner_mode: 'cspan', exit_tid: 'codespan', }
     @pipeline.push tfs.$capture_text()
     @pipeline.push tfs.$generate_missing_p_tags()
-    @pipeline.push tfs.$generate_html_nls { mode: 'standard', tid: 'nl', } ### NOTE removes virtual nl, should come late ###
+    @pipeline.push tfs.$generate_html_nls { mode: 'plain', tid: 'nl', } ### NOTE removes virtual nl, should come late ###
     return null
 
   #---------------------------------------------------------------------------------------------------------

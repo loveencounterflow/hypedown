@@ -39,17 +39,11 @@ E                         = require './errors'
 class Standard_sx extends Syntax
 
   #---------------------------------------------------------------------------------------------------------
-  @mode: 'standard'
+  @mode: 'plain'
 
   #---------------------------------------------------------------------------------------------------------
-  @lx_backslash_escape:  { tid: 'escchr', jump: null, pattern: /\\(?<chr>.)/u, reserved: '\\', }
-  ### TAINT use 'forbidden chrs' (to be implemented) ###
-  # @lx_catchall:          { tid: 'other',  jump: null, pattern: /[^*`\\#]+/u, }
+  # @lx_backslash_escape:  { tid: 'escchr', jump: null, pattern: /\\(?<chr>.)/u, reserved: '\\', }
 
-  # @lx_foo: 'foo'
-  # @lx_bar: /bar/
-  # @lx_something: [ 'foo', /bar/, 'baz', ]
-  # @lx_xxx: -> 'xxx'
 
 
 #===========================================================================================================
@@ -86,12 +80,12 @@ class Markdown_sx extends Syntax
       ]
 
   #---------------------------------------------------------------------------------------------------------
-  @lx_nl:  /$/u
+  # @lx_nl:  /$/u
 
   #---------------------------------------------------------------------------------------------------------
-  @lx_star1:  /(?<!\*)\*(?!\*)/u
-  @lx_star2:  /(?<!\*)\*\*(?!\*)/u
-  @lx_star3:  /(?<!\*)\*\*\*(?!\*)/u
+  @lx_star1:  { tid: 'star1', pattern: /(?<!\*)\*(?!\*)/u,      reserved: '*', }
+  @lx_star2:  { tid: 'star2', pattern: /(?<!\*)\*\*(?!\*)/u,    reserved: '*', }
+  @lx_star3:  { tid: 'star3', pattern: /(?<!\*)\*\*\*(?!\*)/u,  reserved: '*', }
 
   #---------------------------------------------------------------------------------------------------------
   @lx_hashes:  /^(?<text>#{1,6})($|\s+)/u
@@ -105,13 +99,13 @@ class Hypedown_lexer extends Interlex
     super { linewise: true, catchall_concat: true, reserved_concat: true, }
     _TEMP_add_lexemes @
     standard_sx       = new Standard_sx()
-    markdown_sx       = new Markdown_sx { mode: 'standard', codespan_mode: 'cspan', }
+    markdown_sx       = new Markdown_sx { mode: 'plain', codespan_mode: 'cspan', }
     lexemes_lst       = []
     standard_sx.add_lexemes lexemes_lst
     markdown_sx.add_lexemes lexemes_lst
     @add_lexeme lexeme for lexeme in lexemes_lst
-    @add_catchall_lexeme { mode: 'standard', }
-    @add_reserved_lexeme { mode: 'standard', }
+    # @add_catchall_lexeme { mode: 'standard', }
+    # @add_reserved_lexeme { mode: 'standard', }
     return undefined
 
 #-----------------------------------------------------------------------------------------------------------
