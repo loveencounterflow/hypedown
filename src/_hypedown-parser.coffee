@@ -196,11 +196,15 @@ class Hypedown_parser
   _build_pipeline: ->
     tfs       = new Hypedown_transforms()
     @pipeline = new Pipeline()
-    @pipeline.push ( line, send ) =>
-      return send line unless @types.isa.text line
-      # info '^211231^', rpr line
+    #.........................................................................................................
+    # @pipeline.push ( d ) -> urge '^_build_pipeline@1^', rpr d
+    @pipeline.push tokenize_line = ( line, send ) =>
+      # info '^_build_pipeline@2^', rpr line
+      # info '^_build_pipeline@3^', ( t for t from @lexer.walk line )
+      @types.validate.text line
       send token for token from @lexer.walk line
       return null
+    # @pipeline.push ( d ) -> urge '^_build_pipeline@4^', rpr d
     @pipeline.push tfs.$inject_virtual_nl()
     @pipeline.push tfs.$add_parbreak_markers()
     # @pipeline.push ( d ) -> urge '^965-1^', d
@@ -211,6 +215,7 @@ class Hypedown_parser
     @pipeline.push tfs.$capture_text()
     @pipeline.push tfs.$generate_missing_p_tags()
     @pipeline.push tfs.$generate_html_nls { mode: 'plain', tid: 'nl', } ### NOTE removes virtual nl, should come late ###
+    # @pipeline.push ( d ) -> urge '^_build_pipeline@5^', rpr d
     return null
 
   #---------------------------------------------------------------------------------------------------------
