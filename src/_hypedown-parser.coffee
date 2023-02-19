@@ -187,7 +187,7 @@ class Hypedown_parser
   constructor: ( cfg ) ->
     @types        = get_base_types()
     @cfg          = Object.freeze @types.create.hd_parser_cfg cfg
-    @lexer        = new Hypedown_lexer { mode: 'plain', }
+    @lexer        = new Hypedown_lexer()
     # debug '^234^', @lexer
     @_build_pipeline()
     return undefined
