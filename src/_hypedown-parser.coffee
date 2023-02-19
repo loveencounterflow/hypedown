@@ -164,7 +164,7 @@ class Hypedown_transforms extends Hypedown_transforms_stars
       see https://developer.mozilla.org/en-US/docs/Web/HTML/Element/p?retiredLocale=de,
       https://developer.mozilla.org/en-US/docs/Web/HTML/Content_categories#phrasing_content ###
       return send d unless select_token prv,  parbreak_lx
-      return send d unless select_token nxt,  html_text_lx
+      # return send d unless select_token nxt,  html_text_lx
       send H.XXX_new_token 'generate_missing_p_tags', d, 'html', 'text', '<p>', '<p>'
       send d
     return p
