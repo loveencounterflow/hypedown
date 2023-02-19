@@ -33,6 +33,7 @@ GUY                       = require 'guy'
 { misfit
   get_base_types }        = require './types'
 E                         = require './errors'
+H                         = require './helpers'
 { Hypedown_transforms_stars } \
                           = require './_hypedown-transforms-stars'
 { Hypedown_lexer }        = require './_hypedown-lexer'
@@ -44,13 +45,6 @@ select_token = ( token, selector ) ->
   return false if token.$stamped ? false
   return token.mk is selector
 
-#-----------------------------------------------------------------------------------------------------------
-XXX_new_token = ( ref, token, mode, tid, name, value, start, stop, x = null, lexeme = null ) ->
-  ### TAINT recreation of `Interlex::XXX_new_token()` ###
-  jump      = lexeme?.jump ? null
-  { start
-    stop  } = token
-  return new_datom "^#{mode}", { mode, tid, mk: "#{mode}:#{tid}", jump, name, value, start, stop, x, $: ref, }
 
 
 
@@ -82,11 +76,11 @@ class Hypedown_transforms extends Hypedown_transforms_stars
     mode        = 'plain'
     newline_lx  = "#{mode}:nl"
     tid         = 'parbreak'
-    mk          = "#{mode}:#{tid}"
+    mk          = "html:#{tid}"
     p           = new Pipeline()
     template    = { \
-        mode, tid, mk, value: '', start: 0, stop: 0, \
-        $key: '^plain', $: 'add_parbreak_markers', }
+        mode: 'html', tid, mk, value: '', start: 0, stop: 0, \
+        $key: '^html', $: 'add_parbreak_markers', }
     p.push window = transforms.$window { min: -2, max: 0, empty: null, }
     p.push add_parbreak_markers = ( [ lookbehind, previous, current, ], send ) ->
       return send current unless ( select_token lookbehind,  newline_lx )
@@ -107,14 +101,19 @@ class Hypedown_transforms extends Hypedown_transforms_stars
     ### TAINT use API for `mode:key` IDs ###
     enter_mk  = "#{outer_mode}:#{enter_tid}"
     exit_mk   = "#{inner_mode}:#{exit_tid}"
+    text_mk   = "#{inner_mode}:text"
     return ( d, send ) ->
       switch d.mk
         when enter_mk
           send stamp d
-          send XXX_new_token 'parse_md_codespan', d, 'html', 'tag', 'code', '<code>'
+          send H.XXX_new_token 'parse_md_codespan', d, 'html', 'tag', 'code', '<code>'
         when exit_mk
           send stamp d
-          send XXX_new_token 'parse_md_codespan', d, 'html', 'tag', 'code', '</code>'
+          send H.XXX_new_token 'parse_md_codespan', d, 'html', 'tag', 'code', '</code>'
+        when text_mk
+          send stamp d
+          ### TAINT should `text` be escaped? ###
+          send H.XXX_new_token 'parse_md_codespan', d, 'html', 'text', null, d.value
         else
           send d
       return null
@@ -129,7 +128,7 @@ class Hypedown_transforms extends Hypedown_transforms_stars
       return send d unless d.mk is hashes_mk
       send stamp d
       name = "h#{d.x.text.length}"
-      send XXX_new_token 'parse_md_hashes', d, 'html', 'tag', name, "<#{name}>"
+      send H.XXX_new_token 'parse_md_hashes', d, 'html', 'tag', name, "<#{name}>"
       return null
 
 
@@ -137,11 +136,11 @@ class Hypedown_transforms extends Hypedown_transforms_stars
   # FINALIZATION
   #---------------------------------------------------------------------------------------------------------
   $capture_text: ->
-    catchall_lx = "plain:$catchall"
+    catchall_lx = "plain:other"
     return ( d, send ) ->
       return send d unless select_token d, catchall_lx
       send stamp d
-      send XXX_new_token 'capture_text', d, 'html', 'text', d.value, d.value
+      send H.XXX_new_token 'capture_text', d, 'html', 'text', d.value, d.value
 
   #---------------------------------------------------------------------------------------------------------
   $generate_missing_p_tags: -> ### needs add_parbreak_markers, capture_text ###
@@ -154,7 +153,7 @@ class Hypedown_transforms extends Hypedown_transforms_stars
     made implicit. However, observe that the very similar `<div>` tag still has to be closed explicitly.
 
     ###
-    parbreak_lx   = "plain:parbreak"
+    parbreak_lx   = "html:parbreak"
     html_text_lx  = "html:text"
     p             = new Pipeline()
     p.push window = transforms.$window { min: -1, max: +1, empty: null, }
@@ -166,7 +165,7 @@ class Hypedown_transforms extends Hypedown_transforms_stars
       https://developer.mozilla.org/en-US/docs/Web/HTML/Content_categories#phrasing_content ###
       return send d unless select_token prv,  parbreak_lx
       return send d unless select_token nxt,  html_text_lx
-      send XXX_new_token 'generate_missing_p_tags', d, 'html', 'text', '<p>', '<p>'
+      send H.XXX_new_token 'generate_missing_p_tags', d, 'html', 'text', '<p>', '<p>'
       send d
     return p
 
@@ -177,7 +176,7 @@ class Hypedown_transforms extends Hypedown_transforms_stars
       return send d unless select_token d, newline_lx
       send stamp d
       return if d.x?.virtual ? false
-      send XXX_new_token 'generate_html_nls', d, 'html', 'text', '\n', '\n'
+      send H.XXX_new_token 'generate_html_nls', d, 'html', 'text', '\n', '\n'
     return p
 
 
@@ -222,6 +221,4 @@ class Hypedown_parser
 
 
 #===========================================================================================================
-module.exports = {
-  XXX_new_token
-  Hypedown_parser }
+module.exports = { Hypedown_parser, }
