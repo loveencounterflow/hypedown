@@ -338,6 +338,7 @@ These goals motivated the following decisions:
     <include overwrite path=./other-directory/f.hd/>
     ```
 
+  * with `prefix=*`, `<include>` will import all exportables into the documents' main namespace
   * renderable content of an `<include/>`d file will *not* be shown unless the `render` attribute is set;
     alternatively, use `<insert/>`
 * `<insert path='...'/>` inserts the renderable content of another file; equivalent to `<include path='...'
