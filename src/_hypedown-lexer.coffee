@@ -96,7 +96,7 @@ class Hypedown_lexer extends Interlex
 
   #---------------------------------------------------------------------------------------------------------
   constructor: ->
-    super { linewise: true, catchall_concat: true, reserved_concat: true, }
+    super { linewise: true, }
     _TEMP_add_lexemes @
     standard_sx       = new Standard_sx()
     markdown_sx       = new Markdown_sx { mode: 'plain', codespan_mode: 'cspan', }
@@ -134,8 +134,8 @@ _TEMP_add_lexemes = ( lexer ) ->
     lexer.add_lexeme { mode,  tid: 'ltbang',    jump: 'comment',  pattern: '<!--',  reserved: '<', }
     lexer.add_lexeme { mode,  tid: 'lt',        jump: 'tag',      pattern: '<',     reserved: '<', }
     lexer.add_lexeme { mode,  tid: 'ws',        jump: null,       pattern: /\s+/u, }
-    lexer.add_catchall_lexeme { mode, tid: 'other', }
-    lexer.add_reserved_lexeme { mode, tid: 'forbidden', }
+    lexer.add_catchall_lexeme { mode, tid: 'other', concat: true, }
+    lexer.add_reserved_lexeme { mode, tid: 'forbidden', concat: true, }
   #.........................................................................................................
   do =>
     mode = 'xncr'
@@ -158,30 +158,30 @@ _TEMP_add_lexemes = ( lexer ) ->
     lexer.add_lexeme { mode,  tid: 'slashgt',   jump: '^',        pattern: '/>',      reserved: [ '>', '/', ] }
     lexer.add_lexeme { mode,  tid: 'slash',     jump: '^',        pattern: '/',       reserved: '/', }
     lexer.add_lexeme { mode,  tid: 'gt',        jump: '^',        pattern: '>',       reserved: '>', }
-    lexer.add_catchall_lexeme { mode, tid: 'text', }
-    lexer.add_reserved_lexeme { mode, tid: 'forbidden', }
+    lexer.add_catchall_lexeme { mode, tid: 'text', concat: true, }
+    lexer.add_reserved_lexeme { mode, tid: 'forbidden', concat: true, }
   #.........................................................................................................
   do =>
     mode = 'tag:dq'
     lexer.add_lexeme new_escchr_descriptor  mode
     lexer.add_lexeme new_nl_descriptor      mode
     lexer.add_lexeme { mode,  tid: 'dq',        jump: '^',        pattern: '"',       reserved: '"', }
-    lexer.add_catchall_lexeme { mode, tid: 'text', }
+    lexer.add_catchall_lexeme { mode, tid: 'text', concat: true, }
   #.........................................................................................................
   do =>
     mode = 'tag:sq'
     lexer.add_lexeme new_escchr_descriptor  mode
     lexer.add_lexeme new_nl_descriptor      mode
     lexer.add_lexeme { mode,  tid: 'sq',        jump: '^',        pattern: "'",       reserved: "'", }
-    lexer.add_catchall_lexeme { mode, tid: 'text', }
+    lexer.add_catchall_lexeme { mode, tid: 'text', concat: true, }
   #.........................................................................................................
   do =>
     mode = 'comment'
     lexer.add_lexeme new_escchr_descriptor  mode
     lexer.add_lexeme new_nl_descriptor      mode
     lexer.add_lexeme { mode, tid: 'eoc',       jump: '^',         pattern:  '-->',    reserved: '--',  }
-    lexer.add_catchall_lexeme { mode, tid: 'text', }
-    lexer.add_reserved_lexeme { mode, tid: 'forbidden', }
+    lexer.add_catchall_lexeme { mode, tid: 'text', concat: true, }
+    lexer.add_reserved_lexeme { mode, tid: 'forbidden', concat: true, }
   return null
 
 
