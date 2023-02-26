@@ -75,6 +75,7 @@ class Markdown_sx extends Syntax
     return [
       { mode: @cfg.mode,          tid: 'codespan',  jump: entry_handler,  pattern:  /(?<!`)`+(?!`)/u, reserved: '`', }
       { mode: @cfg.codespan_mode, tid: 'codespan',  jump: exit_handler,   pattern:  /(?<!`)`+(?!`)/u, reserved: '`', }
+      ( new_nl_descriptor @cfg.codespan_mode )
       ### NOTE this could be produced with `lexer.add_catchall_lexeme()` ###
       { mode: @cfg.codespan_mode, tid: 'text',      jump: null,           pattern:  /(?:\\`|[^`])+/u,  }
       ]
@@ -109,21 +110,23 @@ class Hypedown_lexer extends Interlex
     return undefined
 
 #-----------------------------------------------------------------------------------------------------------
+new_escchr_descriptor = ( mode ) ->
+  create = ( token ) ->
+    token.x = { chr: '\n', } unless ( token.x?.chr )?
+    return token
+  return { mode, tid: 'escchr', pattern: /\\(?<chr>.|$)/u, reserved: '\\', create, }
+
+#-----------------------------------------------------------------------------------------------------------
+new_nl_descriptor = ( mode ) ->
+  ### TAINT consider to force value by setting it in descriptor (needs interlex update) ###
+  create = ( token ) ->
+    token.value = '\n'
+    return token
+  return { mode, tid: 'nl', pattern: /$/u, create, }
+
+#-----------------------------------------------------------------------------------------------------------
 _TEMP_add_lexemes = ( lexer ) ->
   # lexer.add_lexeme { mode, tid: 'eol',      pattern: ( /$/u  ), }
-  #.........................................................................................................
-  new_escchr_descriptor = ( mode ) ->
-    create = ( token ) ->
-      token.x = { chr: '\n', } unless ( token.x?.chr )?
-      return token
-    return { mode, tid: 'escchr', pattern: /\\(?<chr>.|$)/u, reserved: '\\', create, }
-  #.........................................................................................................
-  new_nl_descriptor = ( mode ) ->
-    ### TAINT consider to force value by setting it in descriptor (needs interlex update) ###
-    create = ( token ) ->
-      token.value = '\n'
-      return token
-    return { mode, tid: 'nl', pattern: /$/u, create, }
   #.........................................................................................................
   do =>
     mode = 'plain'
