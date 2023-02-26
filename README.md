@@ -333,9 +333,11 @@ These goals motivated the following decisions:
   * the number of backticks that start a code region must equal the numbers of backticks that end the
     region; sequences of fewer or more backticks within a code region will become part of the enclosed text;
   * therefore, ` ``x```y`` ` will be turned into `<code>x```y</code>` and  ``` ``x`y`` ``` will be turned
-    into ``<code>x`y</code>``
-  * leading and trailing whitespace will be removed from code spans; to include it, use backslash, space
-    (`\ `)
+    into ``<code>x`y</code>``. As always in HypeDown, it is also possible to escape one or more backticks
+    to mark them as literal characters, so this ``` `\`x\`` ``` will be rendered as ```<code>`x`</code>```
+  * leading and trailing whitespace will be removed from code spans; this allows to start and end a code
+    span with backticks. To include leading or trailing spaces, use backslash, space (`\ `) sequences, which
+    will actually insert `U+00a0 No-Break Space` (very probably what you wanted in the first place).
 
 * HTML representation:
   * `<code>...</code>` for code spans
