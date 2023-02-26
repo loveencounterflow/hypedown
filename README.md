@@ -334,8 +334,8 @@ These goals motivated the following decisions:
     region; sequences of fewer or more backticks within a code region will become part of the enclosed text;
   * therefore, ` ``x```y`` ` will be turned into `<code>x```y</code>` and  ``` ``x`y`` ``` will be turned
     into ``<code>x`y</code>``
-  * leading and trailing whitespace will be removed from code spans; to include it, use backslash, space (`\
-    `)
+  * leading and trailing whitespace will be removed from code spans; to include it, use backslash, space
+    (`\ `)
 
 * HTML representation:
   * `<code>...</code>` for code spans
