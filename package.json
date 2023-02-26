@@ -21,7 +21,7 @@
   "dependencies": {
     "datom": "^11.0.0",
     "guy": "^13.1.0",
-    "intertext-lexer": "^0.11.0",
+    "intertext-lexer": "^0.12.0",
     "intertype": "^0.111.0",
     "moonriver": "^4.0.0",
     "paragate": "^4.0.0"
