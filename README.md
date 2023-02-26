@@ -11,6 +11,8 @@
 - [HypeDown: A MarkDown-like Text Formatting Language](#hypedown-a-markdown-like-text-formatting-language)
 - [Notes](#notes)
   - [Including and Inserting](#including-and-inserting)
+  - [Code Spans and Code Blocks](#code-spans-and-code-blocks)
+- [Links](#links)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -323,4 +325,23 @@ These goals motivated the following decisions:
     alternatively, use `<insert/>`
 * `<insert path='...'/>` inserts the renderable content of another file; equivalent to `<include path='...'
   render='true'/>`; optionally with `prefix`
+
+### Code Spans and Code Blocks
+
+* Markup:
+  * use one or more backticks to delineate code spans and blocks (code regions)
+  * the number of backticks that start a code region must equal the numbers of backticks that end the
+    region; sequences of fewer or more backticks within a code region will become part of the enclosed text;
+  * therefore, ` ``x```y`` ` will be turned into `<code>x```y</code>` and  ``` ``x`y`` ``` will be turned
+    into ``<code>x`y</code>``
+
+* HTML representation:
+  * `<code>...</code>` for code spans
+  * `<pre><code>...</code></pre>` for code blacks
+
+
+## Links
+
+* [Djot syntax](https://htmlpreview.github.io/?https://github.com/jgm/djot/blob/master/doc/syntax.html)
+
 
