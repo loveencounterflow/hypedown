@@ -75,9 +75,11 @@ class Markdown_sx extends Syntax
     return [
       { mode: @cfg.mode,          tid: 'codespan',  jump: entry_handler,  pattern:  /(?<!`)`+(?!`)/u, reserved: '`', }
       { mode: @cfg.codespan_mode, tid: 'codespan',  jump: exit_handler,   pattern:  /(?<!`)`+(?!`)/u, reserved: '`', }
-      ( new_nl_descriptor @cfg.codespan_mode )
-      ### NOTE this could be produced with `lexer.add_catchall_lexeme()` ###
-      { mode: @cfg.codespan_mode, tid: 'text',      jump: null,           pattern:  /(?:\\`|[^`])+/u,  }
+      ( new_nl_descriptor     @cfg.codespan_mode )
+      ( new_escchr_descriptor @cfg.codespan_mode )
+      ### NOTE this should be produced with `lexer.add_catchall_lexeme()` ###
+      # { mode: @cfg.codespan_mode, tid: 'text',      jump: null,           pattern:  /(?:\\`|[^`])+/u,  }
+      { mode: @cfg.codespan_mode, tid: 'text',      jump: null,           pattern:  /[^`\\]+/u,  }
       ]
 
   #---------------------------------------------------------------------------------------------------------

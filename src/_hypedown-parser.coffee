@@ -102,20 +102,58 @@ class Hypedown_transforms extends Hypedown_transforms_stars
     enter_mk  = "#{outer_mode}:#{enter_tid}"
     exit_mk   = "#{inner_mode}:#{exit_tid}"
     text_mk   = "#{inner_mode}:text"
+    escchr_mk = "#{inner_mode}:escchr"
+    collector = []
+    #.......................................................................................................
+    flush = ->
+      last_idx      = collector.length - 1
+      first_txt_idx = 1
+      last_txt_idx  = last_idx - 1
+      lnr1          = ( collector.at  0 ).lnr1
+      lnr2          = ( collector.at -1 ).lnr2
+      x1            = ( collector.at  0 ).x1
+      x2            = ( collector.at -1 ).x2
+      texts         = []
+      #.....................................................................................................
+      for d, idx in collector
+        if ( idx is 0 )
+          yield stamp d
+          yield H.XXX_new_token 'parse_md_codespan', d, 'html', 'tag', 'code', '<code>'
+          continue
+        else if ( idx is last_idx )
+          yield stamp d
+          yield H.XXX_new_token 'parse_md_codespan', d, 'html', 'tag', 'code', '</code>'
+          continue
+        #...................................................................................................
+        switch d.mk
+          when text_mk
+            if      idx is first_txt_idx  then  texts.push d.value.trimStart()
+            else if idx is last_txt_idx   then  texts.push d.value.trimEnd()
+            else                                texts.push d.value
+          when escchr_mk
+            ### TAINT must properly resolve escaped character ###
+            texts.push d.x.chr
+          else
+            throw new Error "^^parse_md_codespan@32", "internal error: unhandled token #{rpr d}"
+        #...................................................................................................
+        if ( idx is last_txt_idx )
+          value = texts.join ''
+          ### TAINT should not use `html` or must escape first ###
+          yield { mode: 'html', tid: 'text', mk: 'html:text', value, lnr1, x1, lnr2, x2, }
+      #.....................................................................................................
+      collector.length = 0
+      return null
+    #.......................................................................................................
     return ( d, send ) ->
       switch d.mk
-        when enter_mk
-          send stamp d
-          send H.XXX_new_token 'parse_md_codespan', d, 'html', 'tag', 'code', '<code>'
+        when enter_mk, text_mk, escchr_mk
+          collector.push d
         when exit_mk
-          send stamp d
-          send H.XXX_new_token 'parse_md_codespan', d, 'html', 'tag', 'code', '</code>'
-        when text_mk
-          send stamp d
-          ### TAINT should `text` be escaped? ###
-          send H.XXX_new_token 'parse_md_codespan', d, 'html', 'text', null, d.value
+          collector.push d
+          send d for d from flush()
         else
           send d
+          # send H.XXX_new_token 'parse_md_codespan', d, 'html', 'text', null, d.value
       return null
 
   #---------------------------------------------------------------------------------------------------------
