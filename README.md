@@ -375,7 +375,9 @@ These goals motivated the following decisions:
 * **[–]** documentation
 * **[–]** so many things
 * **[–]** code regions: whether or not to render
-  * HTML in HTML code regions: <code>a<strong>b</strong></code>
-  * HD in HTML code regions: <code>a**b**</code>
-  * HTML in HD code regions: ```a<strong>b</strong>```
-  * HD in HD code regions: ```a**b**```
+  * HTML in HTML code regions: <code>a<strong>b</strong></code> ([GFM](https://github.github.com/gfm/): does
+    render)
+  * HD in HTML code regions: <code>a**b**</code> ([GFM](https://github.github.com/gfm/): does render)
+  * HTML in HD code regions: ```a<strong>b</strong>``` ([GFM](https://github.github.com/gfm/): doesnt
+    render, shows markup)
+  * HD in HD code regions: ```a**b**``` ([GFM](https://github.github.com/gfm/): doesnt render, shows markup)
