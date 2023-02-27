@@ -385,6 +385,9 @@ These goals motivated the following decisions:
     * HD **in HD** code regions: ```a**b**``` ([GFM](https://github.github.com/gfm/): **doesn't** render,
       shows markup)
   * behavior determined by region, not kind of markup used in region
-  * HTML `<code>` spans in MD act as they do in plain HTML (must use `&entities;` to show literal `<`,
-    `&..;`), but MD ```` ```code``` ```` spans block markup (presumably w/out a way to activate markup)
+  * HTML `<code>` spans in MD act as they do in plain HTML and do *not* block markup (must use `&entities;`
+    to show literal `<`, `&..;`), but MD ```` ```code``` ```` spans *do* block markup (presumably w/out a
+    way to activate markup)
     * so in order to get bold text in a code span, the only way is to use HTML `<code>` spans
+  * probably best to conform to this to avoid surprising / confusing behavior
+
