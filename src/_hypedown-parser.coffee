@@ -97,6 +97,7 @@ class Hypedown_transforms extends Hypedown_transforms_stars
   # PREPARATION
   #---------------------------------------------------------------------------------------------------------
   $parse_md_codespan: ({ outer_mode, enter_tid, inner_mode, exit_tid }) ->
+    ### TAINT consider to rewrite using `$window()` transform ###
     ### TAINT use CFG pattern ###
     ### TAINT use API for `mode:key` IDs ###
     enter_mk  = "#{outer_mode}:#{enter_tid}"
