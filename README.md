@@ -390,4 +390,9 @@ These goals motivated the following decisions:
     way to activate markup)
     * so in order to get bold text in a code span, the only way is to use HTML `<code>` spans
   * probably best to conform to this to avoid surprising / confusing behavior
+* **[–]** code spans: how to treat
+  * multiple spaces
+  * single newlines
+  * multiple newlines
+  * escaped newlines
 
