@@ -13,6 +13,7 @@
   - [Including and Inserting](#including-and-inserting)
   - [Code Spans and Code Blocks](#code-spans-and-code-blocks)
 - [Links](#links)
+- [To Do](#to-do)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -360,11 +361,21 @@ These goals motivated the following decisions:
 
 * HTML representation:
   * `<code>...</code>` for code spans
-  * `<pre><code>...</code></pre>` for code blacks
+  * `<pre><code>...</code></pre>` for code blocks
 
 
 ## Links
 
 * [Djot syntax](https://htmlpreview.github.io/?https://github.com/jgm/djot/blob/master/doc/syntax.html)
+* [*The Double-E Infix Expression Parsing Method*](https://erikeidt.github.io/The-Double-E-Method)
 
 
+## To Do
+
+* **[–]** documentation
+* **[–]** so many things
+* **[–]** code regions: whether or not to render
+  * HTML in HTML code regions: <code>a<strong>b</strong></code>
+  * HD in HTML code regions: <code>a**b**</code>
+  * HTML in HD code regions: ```a<strong>b</strong>```
+  * HD in HD code regions: ```a**b**```
