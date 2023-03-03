@@ -36,7 +36,7 @@ H                         = require './helpers'
 { sorter }                = require 'intertext-lexer'
 
 #===========================================================================================================
-class @Hypedown_transforms_stars
+@Hypedown_parser_stars = ( clasz = Object ) => class extends clasz
 
   #---------------------------------------------------------------------------------------------------------
   $parse_md_stars: ->

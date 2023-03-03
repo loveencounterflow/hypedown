@@ -58,15 +58,16 @@ class Markdown_sx extends Syntax
   #---------------------------------------------------------------------------------------------------------
   @lx_variable_codespan: ( cfg ) ->
     backtick_count  = null
+    jump_codespan   = "#{@cfg.codespan_mode}["
     #.......................................................................................................
     entry_handler = ({ token, match, lexer, }) =>
       backtick_count = token.value.length
-      return @cfg.codespan_mode
+      return jump_codespan
     #.......................................................................................................
     exit_handler = ({ token, match, lexer, }) ->
       if token.value.length is backtick_count
         backtick_count = null
-        return '^'
+        return '.]'
       ### TAINT setting `token.mk` should not have to be done manually ###
       token = lets token, ( token ) -> token.tid = 'text'; token.mk = "#{token.mode}:text"
       return { token, }
@@ -134,10 +135,10 @@ _TEMP_add_lexemes = ( lexer ) ->
     mode = 'plain'
     lexer.add_lexeme new_escchr_descriptor  mode
     lexer.add_lexeme new_nl_descriptor      mode
-    lexer.add_lexeme { mode,  tid: 'amp',       jump: 'xncr',     pattern: /&(?=[^\s\\]+;)/, reserved: '&', } # only match if ahead of (no ws, no bslash) + semicolon
+    lexer.add_lexeme { mode,  tid: 'amp',       jump: '[xncr',    pattern: /&(?=[^\s\\]+;)/, reserved: '&', } # only match if ahead of (no ws, no bslash) + semicolon
     lexer.add_lexeme { mode,  tid: 'slash',     jump: null,       pattern: '/',     reserved: '/', }
-    lexer.add_lexeme { mode,  tid: 'ltbang',    jump: 'comment',  pattern: '<!--',  reserved: '<', }
-    lexer.add_lexeme { mode,  tid: 'lt',        jump: 'tag',      pattern: '<',     reserved: '<', }
+    lexer.add_lexeme { mode,  tid: 'ltbang',    jump: '[comment', pattern: '<!--',  reserved: '<', }
+    lexer.add_lexeme { mode,  tid: 'lt',        jump: '[tag',     pattern: '<',     reserved: '<', }
     lexer.add_lexeme { mode,  tid: 'ws',        jump: null,       pattern: /\s+/u, }
     lexer.add_catchall_lexeme { mode, tid: 'other', concat: true, }
     lexer.add_reserved_lexeme { mode, tid: 'forbidden', concat: true, }
@@ -150,19 +151,19 @@ _TEMP_add_lexemes = ( lexer ) ->
     lexer.add_lexeme { mode,  tid: 'name',      jump: null,     pattern: /(?<=&)[^\s;#\\]+(?=;)/u, } # name of named entity
     lexer.add_lexeme { mode,  tid: 'dec',       jump: null,     pattern: /#(?<nr>[0-9]+)(?=;)/u, }
     lexer.add_lexeme { mode,  tid: 'hex',       jump: null,     pattern: /#(?:x|X)(?<nr>[0-9a-fA-F]+)(?=;)/u, }
-    lexer.add_lexeme { mode,  tid: 'sc',        jump: '^',      pattern: /;/u, }
-    lexer.add_lexeme { mode,  tid: '$error',    jump: '^',      pattern: /.|$/u, }
+    lexer.add_lexeme { mode,  tid: 'sc',        jump: '.]',      pattern: /;/u, }
+    lexer.add_lexeme { mode,  tid: '$error',    jump: '.]',      pattern: /.|$/u, }
   #.........................................................................................................
   do =>
     mode = 'tag'
     lexer.add_lexeme new_escchr_descriptor  mode
     lexer.add_lexeme new_nl_descriptor      mode
     # lexer.add_lexeme { mode,  tid: 'tagtext',   jump: null,       pattern: ( /[^\/>]+/u ), }
-    lexer.add_lexeme { mode,  tid: 'dq',        jump: 'tag:dq',   pattern: '"',       reserved: '"' }
-    lexer.add_lexeme { mode,  tid: 'sq',        jump: 'tag:sq',   pattern: "'",       reserved: "'" }
-    lexer.add_lexeme { mode,  tid: 'slashgt',   jump: '^',        pattern: '/>',      reserved: [ '>', '/', ] }
-    lexer.add_lexeme { mode,  tid: 'slash',     jump: '^',        pattern: '/',       reserved: '/', }
-    lexer.add_lexeme { mode,  tid: 'gt',        jump: '^',        pattern: '>',       reserved: '>', }
+    lexer.add_lexeme { mode,  tid: 'dq',        jump: 'tag:dq[',  pattern: '"',       reserved: '"' }
+    lexer.add_lexeme { mode,  tid: 'sq',        jump: 'tag:sq[',  pattern: "'",       reserved: "'" }
+    lexer.add_lexeme { mode,  tid: 'slashgt',   jump: '.]',       pattern: '/>',      reserved: [ '>', '/', ] }
+    lexer.add_lexeme { mode,  tid: 'slash',     jump: '.]',       pattern: '/',       reserved: '/', }
+    lexer.add_lexeme { mode,  tid: 'gt',        jump: '.]',       pattern: '>',       reserved: '>', }
     lexer.add_catchall_lexeme { mode, tid: 'text', concat: true, }
     lexer.add_reserved_lexeme { mode, tid: 'forbidden', concat: true, }
   #.........................................................................................................
@@ -170,21 +171,21 @@ _TEMP_add_lexemes = ( lexer ) ->
     mode = 'tag:dq'
     lexer.add_lexeme new_escchr_descriptor  mode
     lexer.add_lexeme new_nl_descriptor      mode
-    lexer.add_lexeme { mode,  tid: 'dq',        jump: '^',        pattern: '"',       reserved: '"', }
+    lexer.add_lexeme { mode,  tid: 'dq',        jump: '].',        pattern: '"',       reserved: '"', }
     lexer.add_catchall_lexeme { mode, tid: 'text', concat: true, }
   #.........................................................................................................
   do =>
     mode = 'tag:sq'
     lexer.add_lexeme new_escchr_descriptor  mode
     lexer.add_lexeme new_nl_descriptor      mode
-    lexer.add_lexeme { mode,  tid: 'sq',        jump: '^',        pattern: "'",       reserved: "'", }
+    lexer.add_lexeme { mode,  tid: 'sq',        jump: '].',        pattern: "'",       reserved: "'", }
     lexer.add_catchall_lexeme { mode, tid: 'text', concat: true, }
   #.........................................................................................................
   do =>
     mode = 'comment'
     lexer.add_lexeme new_escchr_descriptor  mode
     lexer.add_lexeme new_nl_descriptor      mode
-    lexer.add_lexeme { mode, tid: 'eoc',       jump: '^',         pattern:  '-->',    reserved: '--',  }
+    lexer.add_lexeme { mode, tid: 'eoc',       jump: '.]',         pattern:  '-->',    reserved: '--',  }
     lexer.add_catchall_lexeme { mode, tid: 'text', concat: true, }
     lexer.add_reserved_lexeme { mode, tid: 'forbidden', concat: true, }
   return null

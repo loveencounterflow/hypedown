@@ -34,8 +34,9 @@ GUY                       = require 'guy'
   get_base_types }        = require './types'
 E                         = require './errors'
 H                         = require './helpers'
-{ Hypedown_transforms_stars } \
-                          = require './_hypedown-transforms-stars'
+{ Hypedown_parser_stars } = require './_hypedown-parser-stars'
+{ Hypedown_parser_htmlish } \
+                          = require './_hypedown-parser-htmlish'
 { Hypedown_lexer }        = require './_hypedown-lexer'
 
 
@@ -49,8 +50,9 @@ select_token = ( token, selector ) ->
 
 
 #===========================================================================================================
-### TAINT temporary quick fix solution; might use mixins or similar in the future ###
-class Hypedown_transforms extends Hypedown_transforms_stars
+class Hypedown_transforms extends \
+  Hypedown_parser_stars \
+  Hypedown_parser_htmlish()
 
 
   #=========================================================================================================
@@ -259,6 +261,7 @@ class Hypedown_parser
     @pipeline.push tfs.$inject_virtual_nl()
     @pipeline.push tfs.$add_parbreak_markers()
     # @pipeline.push ( d ) -> urge '^965-1^', d
+    @pipeline.push tfs.$parse_htmlish()
     @pipeline.push tfs.$parse_md_stars()
     @pipeline.push tfs.$parse_md_hashes { mode: 'plain', tid: 'hashes', }
     @pipeline.push tfs.$parse_md_codespan { outer_mode: 'plain', enter_tid: 'codespan', inner_mode: 'cspan', exit_tid: 'codespan', }
