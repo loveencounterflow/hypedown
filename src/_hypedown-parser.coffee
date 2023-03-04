@@ -68,9 +68,9 @@ class Hypedown_transforms extends \
       return send d unless is_first
       is_first = false
       send { mode, tid, mk, jump: null, value: '', lnr1: 1, x1: 0, lnr2: 1, x2: 0, \
-        atrs: { virtual: true, }, $key: '^plain', $: 'inject_virtual_nl', }
+        data: { virtual: true, }, $key: '^plain', $: 'inject_virtual_nl', }
       send { mode, tid, mk, jump: null, value: '', lnr1: 1, x1: 0, lnr2: 1, x2: 0, \
-        atrs: { virtual: true, }, $key: '^plain', $: 'inject_virtual_nl', }
+        data: { virtual: true, }, $key: '^plain', $: 'inject_virtual_nl', }
       send d
 
   #---------------------------------------------------------------------------------------------------------
@@ -179,7 +179,13 @@ class Hypedown_transforms extends \
     return ( d, send ) ->
       return send d unless select_token d, catchall_lx
       send stamp d
-      send H.XXX_new_token 'capture_text', d, 'html', 'text', d.value, d.value
+      R = H.XXX_new_token 'capture_text', d, 'html', 'text', d.value, d.value
+      R = GUY.lft.lets R, ( R ) ->
+        R.lnr1  = d.lnr1
+        R.x1    = d.x1
+        R.lnr2  = d.lnr2
+        R.x2    = d.x2
+      send R
 
   #---------------------------------------------------------------------------------------------------------
   $generate_missing_p_tags: -> ### needs add_parbreak_markers, capture_text ###
@@ -214,7 +220,7 @@ class Hypedown_transforms extends \
     return generate_html_nls = ( d, send ) ->
       return send d unless select_token d, newline_lx
       send stamp d
-      return if d.atrs?.virtual ? false
+      return if d.data?.virtual ? false
       send H.XXX_new_token 'generate_html_nls', d, 'html', 'text', '\n', '\n'
     return p
 

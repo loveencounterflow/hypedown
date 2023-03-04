@@ -38,29 +38,30 @@ htmlish_sym     = Symbol 'htmlish'
 @Hypedown_parser_htmlish = ( clasz = Object ) => class extends clasz
 
   #---------------------------------------------------------------------------------------------------------
+  tag_types:
+    otag:       { type: 'otag',  open: true,  close: false, }  # opening tag, `<a>`
+    ctag:       { type: 'ctag',  open: false, close: true,  }  # closing tag, `</a>` or `</>`
+    ntag:       { type: 'ntag',  open: true,  close: false, }  # opening tag of `<i/italic/`
+    nctag:      { type: 'nctag', open: false, close: true,  }  # closing slash of `<i/italic/`
+    stag:       { type: 'stag',  open: true,  close: true,  }  # self-closing tag, `<br/>`
+
+  #---------------------------------------------------------------------------------------------------------
   _hd_token_from_paragate_token: ( hd_token, pg_token ) ->
-    tag_types =
-      otag:       { open: true,  close: false, }  # opening tag, `<a>`
-      ctag:       { open: false, close: true,  }  # closing tag, `</a>` or `</>`
-      ntag:       { open: true,  close: false, }  # opening tag of `<i/italic/`
-      nctag:      { open: false, close: true,  }  # closing slash of `<i/italic/`
-      stag:       { open: true,  close: true,  }  # self-closing tag, `<br/>`
-    #.......................................................................................................
-    atrs    = { pg_token.atrs..., }
-    atrs.id = pg_token.id if pg_token.id?
     #.......................................................................................................
     R =
       mode:   'tag'
       tid:    pg_token.type
-      mk:     "tag:???"
+      mk:     "tag:#{pg_token.type}"
       jump:   null
       value:  hd_token.value
       ### TAINT must give first_lnr, last_lnr ###
+      data:   { @tag_types[ pg_token.type ]..., }
       lnr1:   hd_token.lnr1
       x1:     hd_token.x1
       lnr2:   hd_token.lnr2
       x2:     hd_token.x2
-      atrs:   atrs
+    R.data.atrs = pg_token.atrs if pg_token.atrs?
+    R.data.id   = pg_token.id   if pg_token.id?
     return R
 
   #---------------------------------------------------------------------------------------------------------
@@ -76,11 +77,11 @@ htmlish_sym     = Symbol 'htmlish'
     collector = null
     return _collect_tag_tokens = ( d, send ) =>
       if d.tid is '$border'
-        if d.atrs.nxt is 'tag'
+        if d.data.nxt is 'tag'
           send d
           collector = []
           position  = GUY.props.pick_with_fallback d, null, 'lnr1', 'x1'
-        else if d.atrs.prv is 'tag'
+        else if d.data.prv is 'tag'
           position  = { position..., ( GUY.props.pick_with_fallback d, null, 'lnr2', 'x2' )..., }
           debug '^345^', position, ( t.value for t in collector ).join '|'
           ### TAINT use API ###
@@ -115,7 +116,7 @@ htmlish_sym     = Symbol 'htmlish'
   $_parse_tag_source: =>
     return _parse_tag_source = ( d, send ) =>
       return send d unless d.mk is 'raw-html:tag'
-      send stamp d
+      # send stamp d ### NOTE intentionally hiding `raw-html` token as it is condiered an implementation detail ###
       unless ( pg_tokens = HTMLISH.parse d.value ).length is 1
         ### TAINT use API to create token ###
         return send { mode: 'tag', tid: '$error', } ### expected single token, got #{rpr htmlish} ###

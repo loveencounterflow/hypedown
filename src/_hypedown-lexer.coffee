@@ -122,7 +122,7 @@ class Hypedown_lexer extends Interlex
 #-----------------------------------------------------------------------------------------------------------
 new_escchr_descriptor = ( mode ) ->
   create = ( token ) ->
-    token.atrs = { chr: '\n', } unless ( token.atrs?.chr )?
+    token.data = { chr: '\n', } unless ( token.data?.chr )?
     return token
   return { mode, tid: 'escchr', pattern: /\\(?<chr>.|$)/u, reserved: '\\', create, }
 
