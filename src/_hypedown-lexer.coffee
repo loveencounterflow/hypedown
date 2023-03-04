@@ -112,6 +112,13 @@ class Hypedown_lexer extends Interlex
     # @add_reserved_lexeme { mode: 'standard', }
     return undefined
 
+  #---------------------------------------------------------------------------------------------------------
+  step: ( P... ) ->
+    return GUY.lft.lets ( super P... ), ( tokens ) ->
+      delete token.source for token in tokens
+      return null
+    return R
+
 #-----------------------------------------------------------------------------------------------------------
 new_escchr_descriptor = ( mode ) ->
   create = ( token ) ->
