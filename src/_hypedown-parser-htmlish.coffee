@@ -46,6 +46,9 @@ htmlish_sym     = Symbol 'htmlish'
       nctag:      { open: false, close: true,  }  # closing slash of `<i/italic/`
       stag:       { open: true,  close: true,  }  # self-closing tag, `<br/>`
     #.......................................................................................................
+    atrs    = { pg_token.atrs..., }
+    atrs.id = pg_token.id if pg_token.id?
+    #.......................................................................................................
     R =
       mode:   'tag'
       tid:    pg_token.type
@@ -57,9 +60,7 @@ htmlish_sym     = Symbol 'htmlish'
       x1:     hd_token.x1
       lnr2:   hd_token.lnr2
       x2:     hd_token.x2
-      x:
-        atrs:   pg_token.atrs
-        id:     pg_token.id
+      atrs:   atrs
     return R
 
   #---------------------------------------------------------------------------------------------------------
@@ -75,11 +76,11 @@ htmlish_sym     = Symbol 'htmlish'
     collector = null
     return _collect_tag_tokens = ( d, send ) =>
       if d.tid is '$border'
-        if d.x.nxt is 'tag'
+        if d.atrs.nxt is 'tag'
           send d
           collector = []
           position  = GUY.props.pick_with_fallback d, null, 'lnr1', 'x1'
-        else if d.x.prv is 'tag'
+        else if d.atrs.prv is 'tag'
           position  = { position..., ( GUY.props.pick_with_fallback d, null, 'lnr2', 'x2' )..., }
           debug '^345^', position, ( t.value for t in collector ).join '|'
           ### TAINT use API ###

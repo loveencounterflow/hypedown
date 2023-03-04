@@ -68,9 +68,9 @@ class Hypedown_transforms extends \
       return send d unless is_first
       is_first = false
       send { mode, tid, mk, jump: null, value: '', start: 0, stop: 0, \
-        x: { virtual: true, }, $key: '^plain', $: 'inject_virtual_nl', }
+        atrs: { virtual: true, }, $key: '^plain', $: 'inject_virtual_nl', }
       send { mode, tid, mk, jump: null, value: '', start: 0, stop: 0, \
-        x: { virtual: true, }, $key: '^plain', $: 'inject_virtual_nl', }
+        atrs: { virtual: true, }, $key: '^plain', $: 'inject_virtual_nl', }
       send d
 
   #---------------------------------------------------------------------------------------------------------
@@ -216,7 +216,7 @@ class Hypedown_transforms extends \
     return generate_html_nls = ( d, send ) ->
       return send d unless select_token d, newline_lx
       send stamp d
-      return if d.x?.virtual ? false
+      return if d.atrs?.virtual ? false
       send H.XXX_new_token 'generate_html_nls', d, 'html', 'text', '\n', '\n'
     return p
 
