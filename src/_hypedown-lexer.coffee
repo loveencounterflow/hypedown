@@ -100,7 +100,7 @@ class Hypedown_lexer extends Interlex
 
   #---------------------------------------------------------------------------------------------------------
   constructor: ->
-    super { linewise: true, }
+    super { linewise: true, border_tokens: true, }
     _TEMP_add_lexemes @
     standard_sx       = new Standard_sx()
     markdown_sx       = new Markdown_sx { mode: 'plain', codespan_mode: 'cspan', }
