@@ -38,10 +38,42 @@ htmlish_sym     = Symbol 'htmlish'
 @Hypedown_parser_htmlish = ( clasz = Object ) => class extends clasz
 
   #---------------------------------------------------------------------------------------------------------
+  _hd_token_from_paragate_token: ( hd_token, pg_token ) ->
+    tag_types =
+      otag:       { open: true,  close: false, }  # opening tag, `<a>`
+      ctag:       { open: false, close: true,  }  # closing tag, `</a>` or `</>`
+      ntag:       { open: true,  close: false, }  # opening tag of `<i/italic/`
+      nctag:      { open: false, close: true,  }  # closing slash of `<i/italic/`
+      stag:       { open: true,  close: true,  }  # self-closing tag, `<br/>`
+    #.......................................................................................................
+    R =
+      mode:   'tag'
+      tid:    pg_token.type
+      mk:     "tag:???"
+      jump:   null
+      value:  hd_token.value
+      ### TAINT must give first_lnr, last_lnr ###
+      lnr1:   hd_token.lnr1
+      x1:     hd_token.x1
+      lnr2:   hd_token.lnr2
+      x2:     hd_token.x2
+      x:
+        atrs:   pg_token.atrs
+        id:     pg_token.id
+    return R
+
+  #---------------------------------------------------------------------------------------------------------
   $parse_htmlish: ->
+    p = new Pipeline()
+    p.push @$_collect_tag_tokens()
+    p.push @$_parse_tag_source()
+    return p
+
+  #---------------------------------------------------------------------------------------------------------
+  $_collect_tag_tokens: =>
     position  = null
     collector = null
-    return ( d, send ) ->
+    return _collect_tag_tokens = ( d, send ) =>
       if d.tid is '$border'
         if d.x.nxt is 'tag'
           send d
@@ -78,55 +110,24 @@ htmlish_sym     = Symbol 'htmlish'
       # urge '^parse_htmlish@1^', d
     return null
 
+  #---------------------------------------------------------------------------------------------------------
+  $_parse_tag_source: =>
+    return _parse_tag_source = ( d, send ) =>
+      return send d unless d.mk is 'raw-html:tag'
+      send stamp d
+      unless ( pg_tokens = HTMLISH.parse d.value ).length is 1
+        ### TAINT use API to create token ###
+        return send { mode: 'tag', tid: '$error', } ### expected single token, got #{rpr htmlish} ###
+      [ pg_token ]           = GUY.lft.thaw pg_tokens
+      send @_hd_token_from_paragate_token d, pg_token
+      return null
+
+
 #-----------------------------------------------------------------------------------------------------------
 new_parser = ( lexer ) ->
-  #.........................................................................................................
-  $tokenize     = ( parser ) ->
-    return tokenize = ( line, send ) ->
-      @types.validate.text line
-      send token for token from parser.lexer.walk line
-      return null
+
   #.........................................................................................................
   $_hd_token_from_paragate_token = ->
-    return _hd_token_from_paragate_token = ( d, send ) ->
-      return send d unless d[htmlish_sym]?
-      first = d.$collector.at  0
-      last  = d.$collector.at -1
-      # delete d.$collector; H.tabulate "htmlish", [ d, ]
-      #.....................................................................................................
-      #
-      # * otag      opening tag, `<a>`
-      # * ctag      closing tag, `</a>` or `</>`
-      #
-      # * ntag      opening tag of `<i/italic/`
-      # * nctag     closing slash of `<i/italic/`
-      #
-      # * stag      self-closing tag, `<br/>`
-      #
-      tag_types =
-        otag:       { open: true,  close: false, }
-        ctag:       { open: false, close: true,  }
-        ntag:       { open: true,  close: false, }
-        nctag:      { open: false, close: true,  }
-        stag:       { open: true,  close: true,  }
-      #.....................................................................................................
-      e     =
-        mode:   'tag'
-        tid:    d.type
-        mk:     "tag:#{d.type}"
-        jump:   null
-        value:  d.$source
-        ### TAINT must give first_lnr, last_lnr ###
-        lnr:    first.lnr
-        start:  first.start
-        stop:   last.stop
-        x:
-          atrs:   d.atrs
-          id:     d.id
-        source: null
-        $key:   '^tag'
-      send e
-    return null
   #.........................................................................................................
   $parse_htmlish_tag  = ->
     collector   = []
