@@ -67,9 +67,9 @@ class Hypedown_transforms extends \
     return ( d, send ) ->
       return send d unless is_first
       is_first = false
-      send { mode, tid, mk, jump: null, value: '', start: 0, stop: 0, \
+      send { mode, tid, mk, jump: null, value: '', lnr1: 1, x1: 0, lnr2: 1, x2: 0, \
         atrs: { virtual: true, }, $key: '^plain', $: 'inject_virtual_nl', }
-      send { mode, tid, mk, jump: null, value: '', start: 0, stop: 0, \
+      send { mode, tid, mk, jump: null, value: '', lnr1: 1, x1: 0, lnr2: 1, x2: 0, \
         atrs: { virtual: true, }, $key: '^plain', $: 'inject_virtual_nl', }
       send d
 
@@ -81,16 +81,14 @@ class Hypedown_transforms extends \
     mk          = "html:#{tid}"
     p           = new Pipeline()
     template    = { \
-        mode: 'html', tid, mk, value: '', start: 0, stop: 0, \
+        mode: 'html', tid, mk, value: '', \
         $key: '^html', $: 'add_parbreak_markers', }
     p.push window = transforms.$window { min: -2, max: 0, empty: null, }
     p.push add_parbreak_markers = ( [ lookbehind, previous, current, ], send ) ->
       return send current unless ( select_token lookbehind,  newline_lx )
       return send current unless ( select_token previous,    newline_lx )
       return send current if     ( select_token current,     newline_lx )
-      { start
-        stop  } = current
-      send { template..., start, stop, }
+      send { template..., ( GUY.props.pick_with_fallback current, null, 'lnr1', 'x1', 'lnr2', 'x2', )..., }
       send current
     return p
 

@@ -28,9 +28,10 @@ GUY                       = require 'guy'
   stamp }                = DATOM
 
 #-----------------------------------------------------------------------------------------------------------
-@XXX_new_token = ( ref, token, mode, tid, name, value, start, stop, x = null, lexeme = null ) ->
+@XXX_new_token = ( ref, token, mode, tid, name, value, start, stop, atrs = null, lexeme = null ) ->
   ### TAINT recreation of `Interlex::XXX_new_token()` ###
   jump      = lexeme?.jump ? null
   { start
     stop  } = token
-  return new_datom "^#{mode}", { mode, tid, mk: "#{mode}:#{tid}", jump, name, value, start, stop, x, $: ref, }
+  return new_datom "^#{mode}", { mode, tid, mk: "#{mode}:#{tid}", jump, name, value, \
+    lnr1: null, x1: null, lnr2: null, x2: null, atrs, $: ref, }
