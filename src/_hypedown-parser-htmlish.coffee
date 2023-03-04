@@ -39,8 +39,44 @@ htmlish_sym     = Symbol 'htmlish'
 
   #---------------------------------------------------------------------------------------------------------
   $parse_htmlish: ->
-    return ( d ) -> urge '^parse_htmlish@1^', d
-
+    position  = null
+    collector = null
+    return ( d, send ) ->
+      if d.tid is '$border'
+        if d.x.nxt is 'tag'
+          send d
+          collector = []
+          position  = GUY.props.pick_with_fallback d, null, 'lnr1', 'x1'
+        else if d.x.prv is 'tag'
+          position  = { position..., ( GUY.props.pick_with_fallback d, null, 'lnr2', 'x2' )..., }
+          debug '^345^', position, ( t.value for t in collector ).join '|'
+          ### TAINT use API ###
+          token =
+            mode:       'raw-html'
+            tid:        'tag'
+            mk:         'raw-html:tag'
+            jump:       null
+            value:      ( t.value for t in collector ).join ''
+            # x:          null
+            # $stamped:   null
+            # name:       null
+            lnr1:       position.lnr1
+            x1:         position.x1
+            lnr2:       position.lnr2
+            x2:         position.x2
+            $key:       '^whatever'
+            $:          '^parse_htmlish@1^'
+          #.................................................................................................
+          send ( stamp t ) for t in collector
+          collector = null
+          send token
+          send d
+      else if d.mode is 'tag'
+        collector.push d
+      else
+        send d
+      # urge '^parse_htmlish@1^', d
+    return null
 
 #-----------------------------------------------------------------------------------------------------------
 new_parser = ( lexer ) ->
