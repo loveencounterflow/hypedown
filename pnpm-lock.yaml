@@ -3,7 +3,7 @@ lockfileVersion: 5.4
 specifiers:
   datom: ^11.0.0
   guy: ^13.1.0
-  intertext-lexer: ^0.17.0
+  intertext-lexer: ^0.18.0
   intertype: ^0.111.0
   moonriver: ^4.0.0
   paragate: ^4.0.0
@@ -11,7 +11,7 @@ specifiers:
 dependencies:
   datom: 11.0.0
   guy: 13.1.0
-  intertext-lexer: 0.17.0
+  intertext-lexer: 0.18.0
   intertype: 0.111.0
   moonriver: 4.0.0
   paragate: 4.0.0
@@ -172,8 +172,8 @@ packages:
     engines: {node: '>=10.0.0'}
     dev: false
 
-  /intertext-lexer/0.17.0:
-    resolution: {integrity: sha512-Ku34Nzx+zZKxWRluysgv5vSvEWG0wz+R9TM9OwnG093FWQvqHraQ3wNXEVR9m2vxNcCDsixVlGaQQFFjM8y1bA==}
+  /intertext-lexer/0.18.0:
+    resolution: {integrity: sha512-ACXMQbsz1Dk7q7HaFtzcm4y3MaYAjHzapaotUAExxLHQp62D/USY9YY0Wg4hW3R/iyA+6Iyav8NKQi6MUvPCVw==}
     dependencies:
       compose-regexp-commonjs: 0.6.24
       datom: 11.0.0
