@@ -232,6 +232,9 @@ class Hypedown_transforms extends \
       send H.XXX_new_token 'convert_escaped_chrs', d, d.mode, 'text', d.x.chr, d.x.chr
       # send H.XXX_new_token 'convert_escaped_chrs', d, 'html', 'text', d.x.chr, d.x.chr
 
+  #---------------------------------------------------------------------------------------------------------
+  $stamp_borders: -> ( d, send ) -> send if d.tid is '$border' then ( stamp d ) else d
+
 
 #===========================================================================================================
 class Hypedown_parser
@@ -269,6 +272,7 @@ class Hypedown_parser
     @pipeline.push tfs.$generate_missing_p_tags()
     @pipeline.push tfs.$generate_html_nls { mode: 'plain', tid: 'nl', } ### NOTE removes virtual nl, should come late ###
     @pipeline.push tfs.$convert_escaped_chrs()
+    @pipeline.push tfs.$stamp_borders()
     # @pipeline.push ( d ) -> urge '^_build_pipeline@5^', rpr d
     return null
 
