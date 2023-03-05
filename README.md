@@ -363,6 +363,28 @@ These goals motivated the following decisions:
   * `<code>...</code>` for code spans
   * `<pre><code>...</code></pre>` for code blocks
 
+### HTMLish Tags
+
+    without       with          open        close
+    atrs          atrs
+
+    <t>           <t k=v>       ✅         ❌           ltr           otag
+    </>           ———           ❌         ✅           lsr           ctag (empty)
+    </t>          ———           ❌         ✅           ls            ctag (named)
+    <t/(?!>)      <t k=v/(?!>)  ✅         ❌           lt            ntag
+    (?<!<)/(?!>)  ———           ❌         ✅           s             nctag
+    <t/>          <t k=v/>      ✅         ✅           ltsr          stag
+
+
+|  w/out atrs  |   w/ atrs    | open | close | schematic | pg_tag.type  |
+|--------------|--------------|------|-------|-----------|--------------|
+| <t>          | <t k=v>      | ✅    | ❌     | ltr       | otag         |
+| </>          | ———          | ❌    | ✅     | lsr       | ctag (empty) |
+| </t>         | ———          | ❌    | ✅     | ls        | ctag (named) |
+| <t/(?!>)     | <t k=v/(?!>) | ✅    | ❌     | lt        | ntag         |
+| (?<!<)/(?!>) | ———          | ❌    | ✅     | s         | nctag        |
+| <t/>         | <t k=v/>     | ✅    | ✅     | ltsr      | stag         |
+
 
 ## Links
 

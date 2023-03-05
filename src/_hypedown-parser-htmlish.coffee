@@ -39,11 +39,24 @@ htmlish_sym     = Symbol 'htmlish'
 
   #---------------------------------------------------------------------------------------------------------
   tag_types:
-    otag:       { type: 'otag',  open: true,  close: false, }  # opening tag, `<a>`
-    ctag:       { type: 'ctag',  open: false, close: true,  }  # closing tag, `</a>` or `</>`
-    ntag:       { type: 'ntag',  open: true,  close: false, }  # opening tag of `<i/italic/`
-    nctag:      { type: 'nctag', open: false, close: true,  }  # closing slash of `<i/italic/`
+    otag:       { type: 'otag',  open: true,  close: false, }  # opening tag, `<t>`
+    ctag:       { type: 'ctag',  open: false, close: true,  }  # closing tag, `</t>` or `</>`
+    ntag:       { type: 'ntag',  open: true,  close: false, }  # opening tag of `<t/italic/`
+    nctag:      { type: 'nctag', open: false, close: true,  }  # closing slash of `<t/italic/`
     stag:       { type: 'stag',  open: true,  close: true,  }  # self-closing tag, `<br/>`
+    ###
+    without       with          open        close
+    atrs          atrs
+
+    <t>           <t k=v>       ✅         ❌           ltr           otag
+    </>           ———           ❌         ✅           lsr           ctag (empty)
+    </t>          ———           ❌         ✅           ls            ctag (named)
+    <t/(?!>)      <t k=v/(?!>)  ✅         ❌           lt            ntag
+    (?<!<)/(?!>)  ———           ❌         ✅           s             nctag
+    <t/>          <t k=v/>      ✅         ✅           ltsr          stag
+
+    ###
+
 
   #---------------------------------------------------------------------------------------------------------
   _hd_token_from_paragate_token: ( hd_token, pg_token ) ->
@@ -69,6 +82,7 @@ htmlish_sym     = Symbol 'htmlish'
     p = new Pipeline()
     p.push @$_collect_tag_tokens()
     p.push @$_parse_tag_source()
+    p.push @$_parse_sole_slash()
     return p
 
   #---------------------------------------------------------------------------------------------------------
@@ -83,7 +97,7 @@ htmlish_sym     = Symbol 'htmlish'
           position  = GUY.props.pick_with_fallback d, null, 'lnr1', 'x1'
         else if d.data.prv is 'tag'
           position  = { position..., ( GUY.props.pick_with_fallback d, null, 'lnr2', 'x2' )..., }
-          debug '^345^', position, ( t.value for t in collector ).join '|'
+          # debug '^345^', position, ( t.value for t in collector ).join '|'
           ### TAINT use API ###
           token =
             mode:       'raw-html'
@@ -124,6 +138,21 @@ htmlish_sym     = Symbol 'htmlish'
       send @_hd_token_from_paragate_token d, pg_token
       return null
 
+  #---------------------------------------------------------------------------------------------------------
+  $_parse_sole_slash: =>
+    tag_type_stack = []
+    return _parse_sole_slash = ( d, send ) =>
+      switch d.mk
+        when 'tag:otag', 'tag:ctag', 'tag:ntag', 'tag:nctag', 'tag:stag'
+          tag_type_stack.push d.type
+          send d
+        when 'plain:slash'
+          # debug '^_parse_sole_slash@1^', tag_type_stack
+          send stamp d
+          null
+        else
+          send d
+      return null
 
 #-----------------------------------------------------------------------------------------------------------
 new_parser = ( lexer ) ->
