@@ -12,6 +12,7 @@
 - [Notes](#notes)
   - [Including and Inserting](#including-and-inserting)
   - [Code Spans and Code Blocks](#code-spans-and-code-blocks)
+  - [HTMLish Tags](#htmlish-tags)
 - [Links](#links)
 - [To Do](#to-do)
 
@@ -376,14 +377,14 @@ These goals motivated the following decisions:
     <t/>          <t k=v/>      ✅         ✅           ltsr          stag
 
 
-|  w/out atrs  |   w/ atrs    | open | close | schematic | pg_tag.type  |
-|--------------|--------------|------|-------|-----------|--------------|
-| <t>          | <t k=v>      | ✅    | ❌     | ltr       | otag         |
-| </>          | ———          | ❌    | ✅     | lsr       | ctag (empty) |
-| </t>         | ———          | ❌    | ✅     | ls        | ctag (named) |
-| <t/(?!>)     | <t k=v/(?!>) | ✅    | ❌     | lt        | ntag         |
-| (?<!<)/(?!>) | ———          | ❌    | ✅     | s         | nctag        |
-| <t/>         | <t k=v/>     | ✅    | ✅     | ltsr      | stag         |
+| nr |  w/out atrs  |   w/ atrs    | open | close | schematic | pg_tag.type  |
+|----|--------------|--------------|------|-------|-----------|--------------|
+|  1 | <t>          | <t k=v>      | ✅    | ❌     | ltr       | otag         |
+|  2 | </>          | ———          | ❌    | ✅     | lsr       | ctag (empty) |
+|  3 | </t>         | ———          | ❌    | ✅     | ls        | ctag (named) |
+|  4 | <t/(?!>)     | <t k=v/(?!>) | ✅    | ❌     | lt        | ntag         |
+|  5 | (?<!<)/(?!>) | ———          | ❌    | ✅     | s         | nctag        |
+|  6 | <t/>         | <t k=v/>     | ✅    | ✅     | ltsr      | stag         |
 
 
 ## Links
