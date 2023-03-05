@@ -379,12 +379,12 @@ These goals motivated the following decisions:
 
 | nr |  w/out atrs  |   w/ atrs    | open | close | schematic | pg_tag.type  |
 |----|--------------|--------------|------|-------|-----------|--------------|
-|  1 | <t>          | <t k=v>      | ☑    | ❌     | ltr       | otag         |
-|  2 | </>          | ———          | ❌    | ☑     | lsr       | ctag (empty) |
-|  3 | </t>         | ———          | ❌    | ☑     | ls        | ctag (named) |
-|  4 | <t/(?!>)     | <t k=v/(?!>) | ☑    | ❌     | lt        | ntag         |
-|  5 | (?<!<)/(?!>) | ———          | ❌    | ☑     | s         | nctag        |
-|  6 | <t/>         | <t k=v/>     | ☑    | ☑     | ltsr      | stag         |
+|  1 | <t>          | <t k=v>      | ✔    | ❌     | ltr       | otag         |
+|  2 | </>          | ———          | ❌    | ✔     | lsr       | ctag (empty) |
+|  3 | </t>         | ———          | ❌    | ✔     | ls        | ctag (named) |
+|  4 | <t/(?!>)     | <t k=v/(?!>) | ✔    | ❌     | lt        | ntag         |
+|  5 | (?<!<)/(?!>) | ———          | ❌    | ✔     | s         | nctag        |
+|  6 | <t/>         | <t k=v/>     | ✔    | ✔     | ltsr      | stag         |
 
 
 ## Links
