@@ -379,14 +379,14 @@ These goals motivated the following decisions:
  -->
 
 
-| nr |    sample    |   w/out atrs   |    w/ atrs     | ws | **O**pen | **C**lose |  schematic  | pg_tag.type  |
-|----|--------------|----------------|----------------|----|----------|-----------|-------------|--------------|
-|  1 | `ooo<t>iii`  | `<t>`          | `<t k=v>`      | ✔  | ✔        | ❌         | **O-LTR**   | otag         |
+| nr |    sample    |   w/out atrs   |    w/ atrs     | ws | **O**pen | **C**lose |  schematic  |   pg_tag.type    |
+|----|--------------|----------------|----------------|----|----------|-----------|-------------|------------------|
+|  1 | `ooo<t>iii`  | `<t>`          | `<t k=v>`      | ✔  | ✔        | ❌         | **O-LTR**   | otag             |
 |  2 | `iii</>ooo`  | `</>`          | ———            | ❌  | ❌        | ✔         | **C-LSR**   | ctag[^1] (empty) |
 |  3 | `iii</t>ooo` | `</t>`         | ———            | ❌  | ❌        | ✔         | **C-LSTR**  | ctag[^1] (named) |
-|  4 | `ooo<t/iii`  | `<t/(?!>)`     | `<t k=v/(?!>)` | ✔  | ✔        | ❌         | **O-LT**    | ntag         |
-|  5 | `iii/ooo`    | `(?<!<)/(?!>)` | ———            | ❌  | ❌        | ✔         | **C-S**     | nctag        |
-|  6 | `ooo<t/>ooo` | `<t/>`         | `<t k=v/>`     | ✔  | ✔        | ✔         | **OC-LTSR** | stag         |
+|  4 | `ooo<t/iii`  | `<t/(?!>)`     | `<t k=v/(?!>)` | ✔  | ✔        | ❌         | **O-LT**    | ntag             |
+|  5 | `iii/ooo`    | `(?<!<)/(?!>)` | ———            | ❌  | ❌        | ✔         | **C-S**     | nctag            |
+|  6 | `ooo<t/>ooo` | `<t/>`         | `<t k=v/>`     | ✔  | ✔        | ✔         | **OC-LTSR** | stag             |
 
 * In the schematic column, **L**: `<`, **R**: `>`, **S**: `/`, **T**: tag name: the schematic can be used to
   uniquely identify each tag variant. To further clarify, these are prefixed with **O** for 'opening' and /
