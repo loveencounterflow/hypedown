@@ -379,22 +379,27 @@ These goals motivated the following decisions:
  -->
 
 
-| nr |         sample        |   w/out atrs   |    w/ atrs     | ws | **O**pen | **C**lose |  schematic  |   pg_tag.type    |
-|----|-----------------------|----------------|----------------|----|----------|-----------|-------------|------------------|
-|  1 | `ooo<t>iii`           | `<t>`          | `<t k=v>`      | ✔  | ✔        | ❌         | **O-LTR**   | otag             |
-|  2 | `iii</>ooo`           | `</>`          | ———            | ❌  | ❌        | ✔         | **C-LSR**   | ctag<sup>1</sup> |
-|  3 | `iii</t>ooo`          | `</t>`         | ———            | ❌  | ❌        | ✔         | **C-LSTR**  | ctag<sup>2</sup> |
-|  4 | `ooo<t/iii`           | `<t/(?!>)`     | `<t k=v/(?!>)` | ✔  | ✔        | ❌         | **O-LT**    | ntag             |
-|  5 | `iii/ooo`<sup>3</sup> | `(?<!<)/(?!>)` | ———            | ❌  | ❌        | ✔         | **C-S**     | nctag            |
-|  6 | `ooo<t/>ooo`          | `<t/>`         | `<t k=v/>`     | ✔  | ✔        | ✔         | **OC-LTSR** | stag             |
+| nr |         sample        |   w/out atrs   | ws | open | close |  schematic  |      pg_tag      |
+|----|-----------------------|----------------|----|------|-------|-------------|------------------|
+|  1 | `ooo<t>iii`           | `<t>`          | ✔  | ✔    | ❌     | **O-LTR**   | otag             |
+|  2 | `iii</>ooo`           | `</>`          | ❌  | ❌    | ✔     | **C-LSR**   | ctag<sup>1</sup> |
+|  3 | `iii</t>ooo`          | `</t>`         | ❌  | ❌    | ✔     | **C-LSTR**  | ctag<sup>2</sup> |
+|  4 | `ooo<t/iii`           | `<t/(?!>)`     | ✔  | ✔    | ❌     | **O-LT**    | ntag             |
+|  5 | `iii/ooo`<sup>3</sup> | `(?<!<)/(?!>)` | ❌  | ❌    | ✔     | **C-S**     | nctag            |
+|  6 | `ooo<t/>ooo`          | `<t/>`         | ✔  | ✔    | ✔     | **OC-LTSR** | stag             |
 
+* Columns:<br>**nr**: row number for reference. <br>**sample**: what the source looks like. <br>**w/out
+  atrs**: formal representation of the tag (without attributes), with some boundary conditions. <br>**ws**:
+  whether whitespace is allowed within the tag proper (not its content). <br>**open**: whether tag is
+  opening a region. <br>**close**: whether tag closes a region. <br>**schematic**: see below.
+  <br>**pg_tag**: for internal reference.
 * In the **sample** column, `t` represents the tag name, `ooo` some content outside of the tag, and `iii`
   some content inside of the tag (the content that is marked up by the tag in question)
 * In the **schematic** column, **L**: `<`, **R**: `>`, **S**: `/`, **T**: tag name: the schematic can be
   used to uniquely identify each tag variant. To further clarify, these are prefixed with **O** for
   'opening' and / or **C** for 'closing' tag
-* **1)**&nbsp;anonymous closing tag. **2)**&nbsp;named closing tag (the only one allowed in HTML, XML).
-  **3)**&nbsp;only recognized when in a position symmetrical to an **O-LT** tag (as in, `ooo<t/iii/ooo`);
+* **1)**&nbsp;anonymous closing tag.<br>**2)**&nbsp;named closing tag (the only one allowed in HTML, XML).
+  <br>**3)**&nbsp;only recognized when in a position symmetrical to an **O-LT** tag (as in, `ooo<t/iii/ooo`);
   otherwise, either silently ignored or leading to a warning or error, depending on configuration
 
 ## Links
