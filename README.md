@@ -379,16 +379,17 @@ These goals motivated the following decisions:
  -->
 
 
-| nr |   w/out atrs   |    w/ atrs     | open | close | schematic | pg_tag.type  |
-|----|----------------|----------------|------|-------|-----------|--------------|
-|  1 | `<t>`          | `<t k=v>`      | ✔    | ❌     | **LTR**   | otag         |
-|  2 | `</>`          | ———            | ❌    | ✔     | **LSR**   | ctag (empty) |
-|  3 | `</t>`         | ———            | ❌    | ✔     | **LSTR**  | ctag (named) |
-|  4 | `<t/(?!>)`     | `<t k=v/(?!>)` | ✔    | ❌     | **LT**    | ntag         |
-|  5 | `(?<!<)/(?!>)` | ———            | ❌    | ✔     | **S**     | nctag        |
-|  6 | `<t/>`         | `<t k=v/>`     | ✔    | ✔     | **LTSR**  | stag         |
+| nr |   w/out atrs   |    w/ atrs     | **O**pen | **C**lose |  schematic  | pg_tag.type  |
+|----|----------------|----------------|----------|-----------|-------------|--------------|
+|  1 | `<t>`          | `<t k=v>`      | ✔        | ❌         | **O-LTR**   | otag         |
+|  2 | `</>`          | ———            | ❌        | ✔         | **C-LSR**   | ctag (empty) |
+|  3 | `</t>`         | ———            | ❌        | ✔         | **C-LSTR**  | ctag (named) |
+|  4 | `<t/(?!>)`     | `<t k=v/(?!>)` | ✔        | ❌         | **O-LT**    | ntag         |
+|  5 | `(?<!<)/(?!>)` | ———            | ❌        | ✔         | **C-S**     | nctag        |
+|  6 | `<t/>`         | `<t k=v/>`     | ✔        | ✔         | **OC-LTSR** | stag         |
 
-* **L**: `<`, **R**: `>`, **S**: `/`, **T**: tag name
+* In the schematic column, **L**: `<`, **R**: `>`, **S**: `/`, **T**: tag name: the schematic can be used
+  to uniquely identify each tag variant. To further clarify,
 
 
 ## Links
