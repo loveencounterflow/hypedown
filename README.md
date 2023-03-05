@@ -384,7 +384,7 @@ These goals motivated the following decisions:
 |  1 | `<t>`          | `<t k=v>`      | ✔    | ❌     | **LTR**   | otag         |
 |  2 | `</>`          | ———            | ❌    | ✔     | **LSR**   | ctag (empty) |
 |  3 | `</t>`         | ———            | ❌    | ✔     | **LSTR**  | ctag (named) |
-|  4 | `<t/R̄`     | `<t k=v/(?!>)` | ✔    | ❌     | **LT**    | ntag         |
+|  4 | `<t/(?!>)`     | `<t k=v/(?!>)` | ✔    | ❌     | **LT**    | ntag         |
 |  5 | `(?<!<)/(?!>)` | ———            | ❌    | ✔     | **S**     | nctag        |
 |  6 | `<t/>`         | `<t k=v/>`     | ✔    | ✔     | **LTSR**  | stag         |
 
