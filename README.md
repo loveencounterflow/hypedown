@@ -391,9 +391,9 @@ These goals motivated the following decisions:
 * Columns:<br>**nr**: row number for reference. <br>**sample**: what the source looks like. <br>**w/out
   atrs**: formal representation of the tag (without attributes), with some boundary conditions. <br>**ws**:
   whether whitespace is allowed within the tag proper (not its content); none of the forms `</>`, `</t>`,
-  and, trivially, `/` allow whitespace, so`</t >`, `< /t>` and `</ t>` will all lead to errors.
-  <br>**open**: whether tag is opening a region. <br>**close**: whether tag closes a region.
-  <br>**schematic**: see below. <br>**pg_tag**: for internal reference.
+  and, trivially, `/` allow whitespace, so`</t >`, `< /t>` and `</ t>` will all lead to errors. This rule
+  can probably be relaxed in the future. <br>**open**: whether tag is opening a region. <br>**close**:
+  whether tag closes a region. <br>**schematic**: see below. <br>**pg_tag**: for internal reference.
 * In the **sample** column, `t` represents the tag name, `ooo` some content outside of the tag, and `iii`
   some content inside of the tag (the content that is marked up by the tag in question)
 * In the **schematic** column, **L**: `<`, **R**: `>`, **S**: `/`, **T**: tag name: the schematic can be
