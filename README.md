@@ -388,8 +388,9 @@ These goals motivated the following decisions:
 |  5 | `(?<!<)/(?!>)` | ———            | ❌        | ✔         | **C-S**     | nctag        |
 |  6 | `<t/>`         | `<t k=v/>`     | ✔        | ✔         | **OC-LTSR** | stag         |
 
-* In the schematic column, **L**: `<`, **R**: `>`, **S**: `/`, **T**: tag name: the schematic can be used
-  to uniquely identify each tag variant. To further clarify,
+* In the schematic column, **L**: `<`, **R**: `>`, **S**: `/`, **T**: tag name: the schematic can be used to
+  uniquely identify each tag variant. To further clarify, these are prefixed with **O** for 'opening' and /
+  or **C** for 'closing' tag
 
 
 ## Links
