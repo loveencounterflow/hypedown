@@ -382,8 +382,8 @@ These goals motivated the following decisions:
 | nr |    sample    |   w/out atrs   |    w/ atrs     | ws | **O**pen | **C**lose |  schematic  |   pg_tag.type    |
 |----|--------------|----------------|----------------|----|----------|-----------|-------------|------------------|
 |  1 | `ooo<t>iii`  | `<t>`          | `<t k=v>`      | ✔  | ✔        | ❌         | **O-LTR**   | otag             |
-|  2 | `iii</>ooo`  | `</>`          | ———            | ❌  | ❌        | ✔         | **C-LSR**   | ctag[^1] (empty) |
-|  3 | `iii</t>ooo` | `</t>`         | ———            | ❌  | ❌        | ✔         | **C-LSTR**  | ctag[^1] (named) |
+|  2 | `iii</>ooo`  | `</>`          | ———            | ❌  | ❌        | ✔         | **C-LSR**   | ctag<sup>1</sup> |
+|  3 | `iii</t>ooo` | `</t>`         | ———            | ❌  | ❌        | ✔         | **C-LSTR**  | ctag<sup>2</sup> |
 |  4 | `ooo<t/iii`  | `<t/(?!>)`     | `<t k=v/(?!>)` | ✔  | ✔        | ❌         | **O-LT**    | ntag             |
 |  5 | `iii/ooo`    | `(?<!<)/(?!>)` | ———            | ❌  | ❌        | ✔         | **C-S**     | nctag            |
 |  6 | `ooo<t/>ooo` | `<t/>`         | `<t k=v/>`     | ✔  | ✔        | ✔         | **OC-LTSR** | stag             |
@@ -392,8 +392,8 @@ These goals motivated the following decisions:
   uniquely identify each tag variant. To further clarify, these are prefixed with **O** for 'opening' and /
   or **C** for 'closing' tag
 
-* [^1]: XXX
-* [^1]: YYY
+* 1): anonymous closing tag
+* 2): named closing tag (the only one allowed in HTML, XML)
 
 ## Links
 
