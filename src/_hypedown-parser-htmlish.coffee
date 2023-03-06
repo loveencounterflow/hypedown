@@ -45,16 +45,14 @@ htmlish_sym     = Symbol 'htmlish'
     nctag:      { type: 'nctag', open: false, close: true,  }  # closing slash of `<t/italic/`
     stag:       { type: 'stag',  open: true,  close: true,  }  # self-closing tag, `<br/>`
     ###
-    without       with          open        close
-    atrs          atrs
-
-    <t>           <t k=v>       ✅         ❌           ltr           otag
-    </>           ———           ❌         ✅           lsr           ctag (empty)
-    </t>          ———           ❌         ✅           ls            ctag (named)
-    <t/(?!>)      <t k=v/(?!>)  ✅         ❌           lt            ntag
-    (?<!<)/(?!>)  ———           ❌         ✅           s             nctag
-    <t/>          <t k=v/>      ✅         ✅           ltsr          stag
-
+    | nr |         sample        |   w/out atrs   | ws | open | close |  schematic  |      pg_tag      |
+    |----|-----------------------|----------------|----|------|-------|-------------|------------------|
+    |  1 | `ooo<t>iii`           | `<t>`          | ✔  | ✔    | ❌     | **O-LTR**   | otag             |
+    |  2 | `iii</>ooo`           | `</>`          | ❌  | ❌    | ✔     | **C-LSR**   | ctag<sup>1</sup> |
+    |  3 | `iii</t>ooo`          | `</t>`         | ❌  | ❌    | ✔     | **C-LSTR**  | ctag<sup>2</sup> |
+    |  4 | `ooo<t/iii`           | `<t/(?!>)`     | ✔  | ✔    | ❌     | **O-LT**    | ntag             |
+    |  5 | `iii/ooo`<sup>3</sup> | `(?<!<)/(?!>)` | ❌  | ❌    | ✔     | **C-S**     | nctag            |
+    |  6 | `ooo<t/>ooo`          | `<t/>`         | ✔  | ✔    | ✔     | **OC-LTSR** | stag             |
     ###
 
 
