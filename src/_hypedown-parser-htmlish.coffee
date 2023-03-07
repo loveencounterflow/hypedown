@@ -92,11 +92,17 @@ HTMLISH         = ( require 'paragate/lib/htmlish.grammar' ).new_grammar { bare:
     collector = null
     return _collect_tag_tokens = ( d, send ) =>
       if d.tid is '$border'
+        #...................................................................................................
         if d.data.nxt is 'tag'
           send d
           collector = []
           position  = GUY.props.pick_with_fallback d, null, 'lnr1', 'x1'
+        #...................................................................................................
         else if d.data.prv is 'tag'
+          if ( first_token = collector[ 0 ] )?.mk is 'tag:c_lsr'
+            collector = null
+            return send first_token
+          #.................................................................................................
           position  = { position..., ( GUY.props.pick_with_fallback d, null, 'lnr2', 'x2' )..., }
           # debug '^345^', position, ( t.value for t in collector ).join '|'
           ### TAINT use API ###
