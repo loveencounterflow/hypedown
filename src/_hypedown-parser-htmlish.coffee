@@ -22,8 +22,7 @@ GUY                       = require 'guy'
 #...........................................................................................................
 { Pipeline
   transforms  } = require 'moonriver'
-HTMLISH        = ( require 'paragate/lib/htmlish.grammar' ).new_grammar { bare: true, }
-htmlish_sym     = Symbol 'htmlish'
+HTMLISH         = ( require 'paragate/lib/htmlish.grammar' ).new_grammar { bare: true, }
 #...........................................................................................................
 { DATOM }                 = require 'datom'
 #...........................................................................................................
