@@ -158,55 +158,55 @@ htmlish_sym     = Symbol 'htmlish'
           send d
       return null
 
-#-----------------------------------------------------------------------------------------------------------
-new_parser = ( lexer ) ->
+# #-----------------------------------------------------------------------------------------------------------
+# new_parser = ( lexer ) ->
 
-  #.........................................................................................................
-  $_hd_token_from_paragate_token = ->
-  #.........................................................................................................
-  $parse_htmlish_tag  = ->
-    collector   = []
-    within_tag  = false
-    sp          = new Pipeline()
-    sp.push transforms.$window { min: 0, max: +1, empty: null, }
-    sp.push parse_htmlish_tag = ( [ d, nxt, ], send ) ->
-      #.....................................................................................................
-      if within_tag
-        collector.push d
-        # debug '^parse_htmlish_tag@1^', d
-        if d.jump is 'plain' ### TAINT magic number ###
-          within_tag  = false
-          $source     = ( e.value for e from collector ).join ''
-          $collector  = [ collector..., ]
-          send stamp collector.shift() while collector.length > 0
-          htmlish     = HTMLISH.parse $source
-          # H.tabulate '^78^', htmlish
-          # debug '^78^', rpr $source
-          # info '^78^', x for x in htmlish
-          unless htmlish.length is 1
-            ### TAINT use API to create token ###
-            # throw new Error "^34345^ expected single token, got #{rpr htmlish}"
-            return send { mode: 'tag', tid: '$error', }
-          [ htmlish ]           = GUY.lft.thaw htmlish
-          htmlish[htmlish_sym]  = true
-          htmlish.$collector    = $collector
-          htmlish.$source       = $source
-          send htmlish
-        return null
-      #.....................................................................................................
-      else
-        return send d unless nxt?.mk.startsWith 'tag:'
-        within_tag = true
-        collector.push d
-      #.....................................................................................................
-      return null
-    sp.push $_hd_token_from_paragate_token()
-    return sp
-  #.........................................................................................................
-  p             = new Pipeline()
-  p.lexer       = lexer
-  p.push $tokenize p
-  p.push $parse_htmlish_tag()
-  # p.push show = ( d ) -> urge '^parser@1^', d
-  # debug '^43^', p
-  return p
+#   #.........................................................................................................
+#   $_hd_token_from_paragate_token = ->
+#   #.........................................................................................................
+#   $parse_htmlish_tag  = ->
+#     collector   = []
+#     within_tag  = false
+#     sp          = new Pipeline()
+#     sp.push transforms.$window { min: 0, max: +1, empty: null, }
+#     sp.push parse_htmlish_tag = ( [ d, nxt, ], send ) ->
+#       #.....................................................................................................
+#       if within_tag
+#         collector.push d
+#         # debug '^parse_htmlish_tag@1^', d
+#         if d.jump is 'plain' ### TAINT magic number ###
+#           within_tag  = false
+#           $source     = ( e.value for e from collector ).join ''
+#           $collector  = [ collector..., ]
+#           send stamp collector.shift() while collector.length > 0
+#           htmlish     = HTMLISH.parse $source
+#           # H.tabulate '^78^', htmlish
+#           # debug '^78^', rpr $source
+#           # info '^78^', x for x in htmlish
+#           unless htmlish.length is 1
+#             ### TAINT use API to create token ###
+#             # throw new Error "^34345^ expected single token, got #{rpr htmlish}"
+#             return send { mode: 'tag', tid: '$error', }
+#           [ htmlish ]           = GUY.lft.thaw htmlish
+#           htmlish[htmlish_sym]  = true
+#           htmlish.$collector    = $collector
+#           htmlish.$source       = $source
+#           send htmlish
+#         return null
+#       #.....................................................................................................
+#       else
+#         return send d unless nxt?.mk.startsWith 'tag:'
+#         within_tag = true
+#         collector.push d
+#       #.....................................................................................................
+#       return null
+#     sp.push $_hd_token_from_paragate_token()
+#     return sp
+#   #.........................................................................................................
+#   p             = new Pipeline()
+#   p.lexer       = lexer
+#   p.push $tokenize p
+#   p.push $parse_htmlish_tag()
+#   # p.push show = ( d ) -> urge '^parser@1^', d
+#   # debug '^43^', p
+#   return p
