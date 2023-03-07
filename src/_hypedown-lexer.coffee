@@ -144,6 +144,7 @@ _TEMP_add_lexemes = ( lexer ) ->
     lexer.add_lexeme new_nl_descriptor      mode
     lexer.add_lexeme { mode,  tid: 'amp',       jump: '[xncr',    pattern: /&(?=[^\s\\]+;)/, reserved: '&', } # only match if ahead of (no ws, no bslash) + semicolon
     lexer.add_lexeme { mode,  tid: 'slash',     jump: null,       pattern: '/',     reserved: '/', }
+    lexer.add_lexeme { mode,  tid: 'c_lsr',     jump: '[tag]',    pattern: '</>',   reserved: '<', }
     lexer.add_lexeme { mode,  tid: 'ltbang',    jump: '[comment', pattern: '<!--',  reserved: '<', }
     lexer.add_lexeme { mode,  tid: 'lt',        jump: '[tag',     pattern: '<',     reserved: '<', }
     lexer.add_lexeme { mode,  tid: 'ws',        jump: null,       pattern: /\s+/u, }

@@ -39,11 +39,11 @@ htmlish_sym     = Symbol 'htmlish'
 
   #---------------------------------------------------------------------------------------------------------
   tag_types:
-    otag:       { type: 'otag',  open: true,  close: false, }  # opening tag, `<t>`
-    ctag:       { type: 'ctag',  open: false, close: true,  }  # closing tag, `</t>` or `</>`
-    ntag:       { type: 'ntag',  open: true,  close: false, }  # opening tag of `<t/italic/`
-    nctag:      { type: 'nctag', open: false, close: true,  }  # closing slash of `<t/italic/`
-    stag:       { type: 'stag',  open: true,  close: true,  }  # self-closing tag, `<br/>`
+    otag:       { type: 'o_ltr',    open: true,  close: false, }  # opening tag, `<t>`
+    ctag:       { type: 'c_lstr',   open: false, close: true,  }  # closing tag, `</t>` or `</>`
+    ntag:       { type: 'o_lts',    open: true,  close: false, }  # opening tag of `<t/italic/`
+    nctag:      { type: 'c_s',      open: false, close: true,  }  # closing slash of `<t/italic/`
+    stag:       { type: 'oc_ltsr',  open: true,  close: true,  }  # self-closing tag, `<br/>`
     ###
     | nr |         sample        |   w/out atrs   | ws | open | close |  schematic  |      pg_tag      |
     |----|-----------------------|----------------|----|------|-------|-------------|------------------|
