@@ -151,17 +151,6 @@ _TEMP_add_lexemes = ( lexer ) ->
     lexer.add_reserved_lexeme { mode, tid: 'forbidden', concat: true, }
   #.........................................................................................................
   do =>
-    mode = 'xncr'
-    # lexer.add_lexeme new_escchr_descriptor  mode
-    # lexer.add_lexeme new_nl_descriptor      mode
-    lexer.add_lexeme { mode,  tid: 'csg',       jump: null,     pattern: /(?<=&)[^\s;#\\]+(?=#)/u, } # character set sigil (non-standard)
-    lexer.add_lexeme { mode,  tid: 'name',      jump: null,     pattern: /(?<=&)[^\s;#\\]+(?=;)/u, } # name of named entity
-    lexer.add_lexeme { mode,  tid: 'dec',       jump: null,     pattern: /#(?<nr>[0-9]+)(?=;)/u, }
-    lexer.add_lexeme { mode,  tid: 'hex',       jump: null,     pattern: /#(?:x|X)(?<nr>[0-9a-fA-F]+)(?=;)/u, }
-    lexer.add_lexeme { mode,  tid: 'sc',        jump: '.]',      pattern: /;/u, }
-    lexer.add_lexeme { mode,  tid: '$error',    jump: '.]',      pattern: /.|$/u, }
-  #.........................................................................................................
-  do =>
     mode = 'tag'
     lexer.add_lexeme new_escchr_descriptor  mode
     lexer.add_lexeme new_nl_descriptor      mode
@@ -173,6 +162,17 @@ _TEMP_add_lexemes = ( lexer ) ->
     lexer.add_lexeme { mode,  tid: 'gt',        jump: '.]',       pattern: '>',       reserved: '>', }
     lexer.add_catchall_lexeme { mode, tid: 'text', concat: true, }
     lexer.add_reserved_lexeme { mode, tid: 'forbidden', concat: true, }
+  #.........................................................................................................
+  do =>
+    mode = 'xncr'
+    # lexer.add_lexeme new_escchr_descriptor  mode
+    # lexer.add_lexeme new_nl_descriptor      mode
+    lexer.add_lexeme { mode,  tid: 'csg',       jump: null,     pattern: /(?<=&)[^\s;#\\]+(?=#)/u, } # character set sigil (non-standard)
+    lexer.add_lexeme { mode,  tid: 'name',      jump: null,     pattern: /(?<=&)[^\s;#\\]+(?=;)/u, } # name of named entity
+    lexer.add_lexeme { mode,  tid: 'dec',       jump: null,     pattern: /#(?<nr>[0-9]+)(?=;)/u, }
+    lexer.add_lexeme { mode,  tid: 'hex',       jump: null,     pattern: /#(?:x|X)(?<nr>[0-9a-fA-F]+)(?=;)/u, }
+    lexer.add_lexeme { mode,  tid: 'sc',        jump: '.]',      pattern: /;/u, }
+    lexer.add_lexeme { mode,  tid: '$error',    jump: '.]',      pattern: /.|$/u, }
   #.........................................................................................................
   do =>
     mode = 'tag:dq'
