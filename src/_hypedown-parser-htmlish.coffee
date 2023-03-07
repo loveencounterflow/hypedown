@@ -59,10 +59,10 @@ htmlish_sym     = Symbol 'htmlish'
   #---------------------------------------------------------------------------------------------------------
   _hd_token_from_paragate_token: ( hd_token, pg_token ) ->
     #.......................................................................................................
+    tid = if pg_token.$key is '^error' then '$error' else pg_token.type
     R =
       mode:   'tag'
-      tid:    pg_token.type
-      mk:     "tag:#{pg_token.type}"
+      tid:    tid
       jump:   null
       value:  hd_token.value
       ### TAINT must give first_lnr, last_lnr ###
@@ -71,8 +71,12 @@ htmlish_sym     = Symbol 'htmlish'
       x1:     hd_token.x1
       lnr2:   hd_token.lnr2
       x2:     hd_token.x2
+    R.mk        = "#{R.mode}:#{R.tid}"
     R.data.atrs = pg_token.atrs if pg_token.atrs?
     R.data.id   = pg_token.id   if pg_token.id?
+    if pg_token.$key is '^error'
+      R.data.code     = pg_token.code
+      R.data.message  = pg_token.message
     return R
 
   #---------------------------------------------------------------------------------------------------------
@@ -129,11 +133,13 @@ htmlish_sym     = Symbol 'htmlish'
     return _parse_tag_source = ( d, send ) =>
       return send d unless d.mk is 'raw-html:tag'
       # send stamp d ### NOTE intentionally hiding `raw-html` token as it is condiered an implementation detail ###
-      unless ( pg_tokens = HTMLISH.parse d.value ).length is 1
-        ### TAINT use API to create token ###
-        return send { mode: 'tag', tid: '$error', } ### expected single token, got #{rpr htmlish} ###
-      [ pg_token ]           = GUY.lft.thaw pg_tokens
-      send @_hd_token_from_paragate_token d, pg_token
+      pg_tokens = HTMLISH.parse d.value
+      # unless pg_tokens.length is 1
+      #   ### TAINT use API to create token ###
+      #   return send { mode: 'tag', tid: '$error', \
+      #     data: { message: "expected single token, got #{rpr pg_tokens}", }, $: '^_parse_tag_source@1^', }
+      # [ pg_token ]           = GUY.lft.thaw pg_tokens
+      send @_hd_token_from_paragate_token d, pg_token for pg_token in pg_tokens
       return null
 
   #---------------------------------------------------------------------------------------------------------
