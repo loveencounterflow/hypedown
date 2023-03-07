@@ -58,7 +58,7 @@ HTMLISH         = ( require 'paragate/lib/htmlish.grammar' ).new_grammar { bare:
   #---------------------------------------------------------------------------------------------------------
   _hd_token_from_paragate_token: ( hd_token, pg_token ) ->
     #.......................................................................................................
-    tid = if pg_token.$key is '^error' then '$error' else pg_token.type
+    tid = if pg_token.$key is '^error' then '$error' else @tag_types[ pg_token.type ]?.type ? '???'
     R =
       mode:   'tag'
       tid:    tid
