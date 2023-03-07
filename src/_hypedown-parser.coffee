@@ -54,6 +54,16 @@ class Hypedown_transforms extends \
   Hypedown_parser_stars \
   Hypedown_parser_htmlish()
 
+  #---------------------------------------------------------------------------------------------------------
+  $show_lexer_tokens: ->
+    collector = []
+    last      = Symbol 'last'
+    H2        = require '../../hengist/dev/hypedown/lib/helpers.js'
+    return $ { last, }, ( d ) ->
+      if d is last
+        return H2.tabulate ( rpr ( t.value for t in collector ) ), collector
+      collector.push d
+      return null
 
   #=========================================================================================================
   # PREPARATION
@@ -265,6 +275,7 @@ class Hypedown_parser
       send token for token from @lexer.walk line
       return null
     # @pipeline.push ( d ) -> urge '^_build_pipeline@4^', rpr d
+    @pipeline.push tfs.$show_lexer_tokens()
     @pipeline.push tfs.$inject_virtual_nl()
     @pipeline.push tfs.$add_parbreak_markers()
     # @pipeline.push ( d ) -> urge '^965-1^', d
