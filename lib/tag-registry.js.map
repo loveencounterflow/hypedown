@@ -1,0 +1,13 @@
+{
+  "version": 3,
+  "file": "",
+  "sourceRoot": "",
+  "sources": [
+    "../src/tag-registry.coffee"
+  ],
+  "names": [],
+  "mappings": "AAE4G;EAAA;EAC5G,IAAC,CAAA,cAAD,GACE;IAAA,IAAA,EAAY;MAAE,IAAA,EAAM,OAAR;MAAoB,IAAA,EAAM,IAA1B;MAAiC,KAAA,EAAO,KAAxC;MAA+C,KAAA,EAAO,IAAtD;IAAA,CAAZ;IACA,IAAA,EAAY;MAAE,IAAA,EAAM,QAAR;MAAoB,IAAA,EAAM,KAA1B;MAAiC,KAAA,EAAO,IAAxC;MAA+C,KAAA,EAAO,IAAtD;IAAA,CADZ;IAEA,IAAA,EAAY;MAAE,IAAA,EAAM,OAAR;MAAoB,IAAA,EAAM,IAA1B;MAAiC,KAAA,EAAO,KAAxC;MAA+C,KAAA,EAAO,IAAtD;IAAA,CAFZ;IAGA,KAAA,EAAY;MAAE,IAAA,EAAM,KAAR;MAAoB,IAAA,EAAM,KAA1B;MAAiC,KAAA,EAAO,IAAxC;MAA+C,KAAA,EAAO,KAAtD;IAAA,CAHZ;IAIA,IAAA,EAAY;MAAE,IAAA,EAAM,SAAR;MAAoB,IAAA,EAAM,IAA1B;MAAiC,KAAA,EAAO,IAAxC;MAA+C,KAAA,EAAO,IAAtD;IAAA,CAJZ;IAKA,KAAA,EAAY;MAAE,IAAA,EAAM,OAAR;MAAoB,IAAA,EAAM,KAA1B;MAAiC,KAAA,EAAO,IAAxC;MAA+C,KAAA,EAAO,KAAtD;IAAA;EALZ;;EAF0G;;;;;;;;;;AAAA",
+  "sourcesContent": [
+    "\n\n#-----------------------------------------------------------------------------------------------------------\n@pg_and_hd_tags =\n  otag:       { type: 'o_ltr',    open: true,  close: false, parse: true, }  # opening tag, `<t>`\n  ctag:       { type: 'c_lstr',   open: false, close: true,  parse: true, }  # closing tag, `</t>` or `</>`\n  ntag:       { type: 'o_lts',    open: true,  close: false, parse: true, }  # opening tag of `<t/italic/`\n  nctag:      { type: 'c_s',      open: false, close: true,  parse: false, }  # closing slash of `<t/italic/`\n  stag:       { type: 'oc_ltsr',  open: true,  close: true,  parse: true, }  # self-closing tag, `<br/>`\n  c_lsr:      { type: 'c_lsr',    open: false, close: true,  parse: false, }  # `</>`\n  ###\n  | nr |         sample        |   w/out atrs   | ws | open | close |  schematic  |      pg_tag      |\n  |----|-----------------------|----------------|----|------|-------|-------------|------------------|\n  |  1 | `ooo<t>iii`           | `<t>`          | ✔  | ✔    | ❌     | **O-LTR**   | otag             |\n  |  2 | `iii</>ooo`           | `</>`          | ❌  | ❌    | ✔     | **C-LSR**   | ctag<sup>1</sup> |\n  |  3 | `iii</t>ooo`          | `</t>`         | ❌  | ❌    | ✔     | **C-LSTR**  | ctag<sup>2</sup> |\n  |  4 | `ooo<t/iii`           | `<t/(?!>)`     | ✔  | ✔    | ❌     | **O-LT**    | ntag             |\n  |  5 | `iii/ooo`<sup>3</sup> | `(?<!<)/(?!>)` | ❌  | ❌    | ✔     | **C-S**     | nctag            |\n  |  6 | `ooo<t/>ooo`          | `<t/>`         | ✔  | ✔    | ✔     | **OC-LTSR** | stag             |\n  ###\n"
+  ]
+}
