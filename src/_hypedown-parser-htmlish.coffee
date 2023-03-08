@@ -28,7 +28,8 @@ HTMLISH         = ( require 'paragate/lib/htmlish.grammar' ).new_grammar { bare:
 #...........................................................................................................
 { new_datom
   lets
-  stamp }                = DATOM
+  stamp }                 = DATOM
+TR                        = require './tag-registry'
 
 
 #===========================================================================================================
@@ -36,36 +37,18 @@ HTMLISH         = ( require 'paragate/lib/htmlish.grammar' ).new_grammar { bare:
 #-----------------------------------------------------------------------------------------------------------
 @Hypedown_parser_htmlish = ( clasz = Object ) => class extends clasz
 
-  #---------------------------------------------------------------------------------------------------------
-  tag_types:
-    otag:       { type: 'o_ltr',    open: true,  close: false, }  # opening tag, `<t>`
-    ctag:       { type: 'c_lstr',   open: false, close: true,  }  # closing tag, `</t>` or `</>`
-    ntag:       { type: 'o_lts',    open: true,  close: false, }  # opening tag of `<t/italic/`
-    nctag:      { type: 'c_s',      open: false, close: true,  }  # closing slash of `<t/italic/`
-    stag:       { type: 'oc_ltsr',  open: true,  close: true,  }  # self-closing tag, `<br/>`
-    ###
-    | nr |         sample        |   w/out atrs   | ws | open | close |  schematic  |      pg_tag      |
-    |----|-----------------------|----------------|----|------|-------|-------------|------------------|
-    |  1 | `ooo<t>iii`           | `<t>`          | ✔  | ✔    | ❌     | **O-LTR**   | otag             |
-    |  2 | `iii</>ooo`           | `</>`          | ❌  | ❌    | ✔     | **C-LSR**   | ctag<sup>1</sup> |
-    |  3 | `iii</t>ooo`          | `</t>`         | ❌  | ❌    | ✔     | **C-LSTR**  | ctag<sup>2</sup> |
-    |  4 | `ooo<t/iii`           | `<t/(?!>)`     | ✔  | ✔    | ❌     | **O-LT**    | ntag             |
-    |  5 | `iii/ooo`<sup>3</sup> | `(?<!<)/(?!>)` | ❌  | ❌    | ✔     | **C-S**     | nctag            |
-    |  6 | `ooo<t/>ooo`          | `<t/>`         | ✔  | ✔    | ✔     | **OC-LTSR** | stag             |
-    ###
-
 
   #---------------------------------------------------------------------------------------------------------
   _hd_token_from_paragate_token: ( hd_token, pg_token ) ->
     #.......................................................................................................
-    tid = if pg_token.$key is '^error' then '$error' else @tag_types[ pg_token.type ]?.type ? '???'
+    tid = if pg_token.$key is '^error' then '$error' else TR.pg_and_hd_tags[ pg_token.type ]?.type ? '???'
     R =
       mode:   'tag'
       tid:    tid
       jump:   null
       value:  hd_token.value
       ### TAINT must give first_lnr, last_lnr ###
-      data:   { @tag_types[ pg_token.type ]..., }
+      data:   { TR.pg_and_hd_tags[ pg_token.type ]..., }
       lnr1:   hd_token.lnr1
       x1:     hd_token.x1
       lnr2:   hd_token.lnr2
