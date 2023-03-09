@@ -220,7 +220,9 @@ class Hypedown_transforms extends \
       https://developer.mozilla.org/en-US/docs/Web/HTML/Content_categories#phrasing_content ###
       return send d unless select_token prv,  parbreak_lx
       # return send d unless select_token nxt,  html_text_lx
-      send H.XXX_new_token 'generate_missing_p_tags', d, 'html', 'text', '<p>', '<p>'
+      # send H.XXX_new_token 'generate_missing_p_tags', d, 'html', 'text', '<p>', '<p>'
+      { lnr1, x1, } = d
+      send { mode: 'html', tid: 'text', mk: 'html:text', value: '<p>', lnr1, x1, lnr2: lnr1, x2: x1, }
       send d
     return p
 
