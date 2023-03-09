@@ -102,7 +102,7 @@ TR                        = require './tag-registry'
           position  = GUY.props.pick_with_fallback d, null, 'lnr1', 'x1'
         #...................................................................................................
         else if d.data.prv is 'tag'
-          if ( first_token = collector[ 0 ] )?.mk is 'tag:c_lsr'
+          if ( collector.length is 1 ) and not ( ( first_token = collector[ 0 ] )?.data?.parse ? true )
             collector = null
             return send first_token
           #.................................................................................................
