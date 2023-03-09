@@ -41,7 +41,19 @@ TR                        = require './tag-registry'
   #---------------------------------------------------------------------------------------------------------
   _hd_token_from_paragate_token: ( hd_token, pg_token ) ->
     #.......................................................................................................
-    tid = if pg_token.$key is '^error' then '$error' else TR.pg_and_hd_tags[ pg_token.type ]?.type ? '???'
+    if pg_token.$key is '^error'
+      tid = '$error'
+    else
+      unless ( tid = TR.pg_and_hd_tags[ pg_token.type ]?.type )?
+        debug '^35345^', hd_token
+        debug '^35345^', pg_token
+        return GUY.lft.lets hd_token, ( d ) =>
+          message = "unable to find pg_token.type #{rpr pg_token.type} in TR.pg_and_hd_tags"
+          d.mode  = 'tag'
+          d.tid   = '$error'
+          d.data  = { d.data..., message, hd_token, }
+          d.$     = '^_hd_token_from_paragate_token@1^'
+    #.......................................................................................................
     R =
       mode:   'tag'
       tid:    tid
