@@ -434,4 +434,7 @@ These goals motivated the following decisions:
   * single newlines
   * multiple newlines
   * escaped newlines
+* **[–]** implement notations to recognize global and local stop points:
+  * a global stop point will cause document production to terminate
+  * a local stop point will cause processing of the current source file
 
