@@ -165,7 +165,6 @@ class Hypedown_transforms extends \
           send e for e from flush()
         else
           send d
-          # send H.XXX_new_token 'parse_md_codespan', d, 'html', 'text', null, d.value
       return null
 
   #---------------------------------------------------------------------------------------------------------
