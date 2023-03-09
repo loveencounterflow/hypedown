@@ -243,6 +243,7 @@ class Hypedown_transforms extends \
     ### TAINT must consult registry of escape codes so `\n` -> U+000a but `\a` -> U+0061 ###
     escchr_tid = 'escchr'
     return ( d, send ) ->
+      return send d if d.$stamped
       return send d unless d.tid is escchr_tid
       send stamp d
       send H.XXX_new_token 'convert_escaped_chrs', d, d.mode, 'text', d.x.chr, d.x.chr
