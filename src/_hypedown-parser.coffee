@@ -143,7 +143,7 @@ class Hypedown_transforms extends \
             else                                texts.push d.value
           when escchr_mk
             ### TAINT must properly resolve escaped character ###
-            texts.push d.x.chr
+            texts.push d.data.chr
           else
             throw new Error "^^parse_md_codespan@32", "internal error: unhandled token #{rpr d}"
         #...................................................................................................
@@ -177,7 +177,7 @@ class Hypedown_transforms extends \
     return ( d, send ) ->
       return send d unless d.mk is hashes_mk
       send stamp d
-      name = "h#{d.x.text.length}"
+      name = "h#{d.data.text.length}"
       send H.XXX_new_token 'parse_md_hashes', d, 'html', 'tag', name, "<#{name}>"
       return null
 
