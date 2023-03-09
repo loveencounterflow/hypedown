@@ -106,14 +106,14 @@ class Hypedown_transforms extends \
   #=========================================================================================================
   # PREPARATION
   #---------------------------------------------------------------------------------------------------------
-  $parse_md_codespan: ({ outer_mode, enter_tid, inner_mode, exit_tid }) ->
+  $parse_md_codespan: ->
     ### TAINT consider to rewrite using `$window()` transform ###
     ### TAINT use CFG pattern ###
     ### TAINT use API for `mode:key` IDs ###
-    enter_mk  = "#{outer_mode}:#{enter_tid}"
-    exit_mk   = "#{inner_mode}:#{exit_tid}"
-    text_mk   = "#{inner_mode}:text"
-    escchr_mk = "#{inner_mode}:escchr"
+    enter_mk  = "plain:codespan"
+    exit_mk   = "cspan:codespan"
+    text_mk   = "cspan:text"
+    escchr_mk = "cspan:escchr"
     collector = []
     #.......................................................................................................
     flush = ->
