@@ -278,14 +278,14 @@ class Hypedown_parser
       send token for token from @lexer.walk line
       return null
     # @pipeline.push ( d ) -> urge '^_build_pipeline@4^', rpr d
-    @pipeline.push tfs.$show_lexer_tokens()
+    # @pipeline.push tfs.$show_lexer_tokens()
     @pipeline.push tfs.$inject_virtual_nl()
     @pipeline.push tfs.$add_parbreak_markers()
-    # @pipeline.push ( d ) -> urge '^965-1^', d
+    # @pipeline.push ( d ) -> urge '^965-1^', d.mk, rpr d.value
+    @pipeline.push tfs.$parse_md_codespan()
     @pipeline.push tfs.$parse_htmlish()
     @pipeline.push tfs.$parse_md_stars()
     @pipeline.push tfs.$parse_md_hashes { mode: 'plain', tid: 'hashes', }
-    @pipeline.push tfs.$parse_md_codespan { outer_mode: 'plain', enter_tid: 'codespan', inner_mode: 'cspan', exit_tid: 'codespan', }
     @pipeline.push tfs.$capture_text()
     @pipeline.push tfs.$generate_missing_p_tags()
     @pipeline.push tfs.$generate_html_nls { mode: 'plain', tid: 'nl', } ### NOTE removes virtual nl, should come late ###
