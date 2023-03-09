@@ -8,6 +8,7 @@
   nctag:      { type: 'c_s',      open: false, close: true,  parse: false, }  # closing slash of `<t/italic/`
   stag:       { type: 'oc_ltsr',  open: true,  close: true,  parse: true, }  # self-closing tag, `<br/>`
   c_lsr:      { type: 'c_lsr',    open: false, close: true,  parse: false, }  # `</>`
+  c_s:        { type: 'c_lsr',    open: false, close: true,  parse: false, }  # `</>`
   ###
   | nr |         sample        |   w/out atrs   | ws | open | close |  schematic  |      pg_tag      |
   |----|-----------------------|----------------|----|------|-------|-------------|------------------|
