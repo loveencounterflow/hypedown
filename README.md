@@ -451,8 +451,9 @@ These goals motivated the following decisions:
     * which means they can not be overriden by other HypeDown syntax, except when *any* of the letters is
       preceded by a slash or expressed as an XNCR
     * they have restricted syntax: no extra whitespace, no linebreaks, no attributes, no uppercase is
-      allowed; they must appear as the exact sequences `<?stop?>` and `<?stop-all?>` literally, on a single
-      line of source text
+      allowed; they must appear as the exact sequences `<?stop?>` and `<?stop-all?>` (or `<?stop_all?>`)
+      literally, on a single line of source text; the variant `<?stop_all?>` allows an underscore to prevent
+      text editors from inserting a linebreak after the hyphen
     * thus, none of `\<?stop?>`, `<\?stop?>`, `<?st\op?>`, `<?st&#x6f;p?>`, `<?stop?&lt;` will cause a
       processing stop; rather, they will be processed like other source material (and may produce a literal
       text `<?stop?>` or `<?st&#x6f;p?>` or even be elided, depending on the environment within they appear,
