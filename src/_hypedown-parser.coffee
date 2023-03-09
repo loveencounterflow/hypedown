@@ -246,8 +246,8 @@ class Hypedown_transforms extends \
       return send d if d.$stamped
       return send d unless d.tid is escchr_tid
       send stamp d
-      send H.XXX_new_token 'convert_escaped_chrs', d, d.mode, 'text', d.x.chr, d.x.chr
-      # send H.XXX_new_token 'convert_escaped_chrs', d, 'html', 'text', d.x.chr, d.x.chr
+      send H.XXX_new_token 'convert_escaped_chrs', d, d.mode, 'text', d.data.chr, d.data.chr
+      # send H.XXX_new_token 'convert_escaped_chrs', d, 'html', 'text', d.data.chr, d.data.chr
 
   #---------------------------------------------------------------------------------------------------------
   $stamp_borders: -> ( d, send ) -> send if d.tid is '$border' then ( stamp d ) else d
