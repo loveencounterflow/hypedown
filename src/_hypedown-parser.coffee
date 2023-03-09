@@ -155,7 +155,7 @@ class Hypedown_transforms extends \
       collector.length = 0
       return null
     #.......................................................................................................
-    return ( d, send ) ->
+    return parse_md_codespan = ( d, send ) ->
       switch d.mk
         when enter_mk, text_mk, escchr_mk
           collector.push d
