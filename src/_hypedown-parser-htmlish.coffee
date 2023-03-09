@@ -87,7 +87,6 @@ TR                        = require './tag-registry'
     return _normalize_tag_tokens = ( d, send ) =>
       return send d unless d.mode is 'tag'
       return send d unless ( data = TR.pg_and_hd_tags[ d.tid ] )?
-      debug '^_normalize_tag_tokens@1^', d.mk, ( rpr d.value ), data
       send GUY.lft.lets d, ( d ) -> d.data = { d.data..., data..., }
 
   #---------------------------------------------------------------------------------------------------------
