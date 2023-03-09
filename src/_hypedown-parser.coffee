@@ -158,6 +158,7 @@ class Hypedown_transforms extends \
     return parse_md_codespan = ( d, send ) ->
       switch d.mk
         when enter_mk, text_mk, escchr_mk
+          send stamp d
           collector.push d
         when exit_mk
           collector.push d
