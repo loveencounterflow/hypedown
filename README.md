@@ -437,4 +437,21 @@ These goals motivated the following decisions:
 * **[–]** implement notations to recognize global and local stop points:
   * a global stop point will cause document production to terminate
   * a local stop point will cause processing of the current source file
+  * implement as an [XML Processing Instruction
+    (XMLPI)](https://en.wikipedia.org/wiki/Processing_Instruction):
+    * starts with `<?` (start of processing instruction, SOPI)
+    * command, any non-WS until WS or EOPI is found: `/\S+(?=\s|\?>)/`
+    * attributes (HTML attributes)
+    * ends with `?>` (end of processing instruction, EOPI)
+  * `<?stop?>`, interpreted as local stop when in an included / inserted file (subfiles), and as a global
+    stop when found in main file
+  * `<?stop all?>` is explicitly global, can be used in subfiles
+  * `<?stop?>` and `<?stop all?>` are special in that they're scanned for independently from lexer, parser
+    *before* those get to see the source
+    * which means they can not be overriden by other HypeDown syntax, except when *any* of the letters is
+      preceded by a slash or expressed as an XNCR
+    * thus, none of `\<?stop?>`, `<\?stop?>`, `<?st\op?>`, `<?st&#x6f;p?>`, `<?stop?&lt;` will cause a
+      processing stop; rather, they will be processed like other source material (and may produce a literal
+      text `<?stop?>` or `<?st&#x6f;p?>` or even be elided, depending on the environment within they appear,
+      which might happen to be running text, a code span, or an HTML comment)
 
