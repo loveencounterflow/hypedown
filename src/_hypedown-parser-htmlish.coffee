@@ -41,7 +41,9 @@ TR                        = require './tag-registry'
   #---------------------------------------------------------------------------------------------------------
   _hd_token_from_paragate_token: ( hd_token, pg_token ) ->
     #.......................................................................................................
-    if pg_token.$key is '^error'
+    if pg_token.$key is '^pi'
+      tid = 'xmlpi'
+    else if pg_token.$key is '^error'
       tid = '$error'
     else
       unless ( tid = TR.pg_and_hd_tags[ pg_token.type ]?.type )?
