@@ -22,8 +22,8 @@
     "datom": "^11.0.0",
     "guy": "^13.2.0",
     "intertext-lexer": "^0.21.0",
-    "intertype": "^0.111.0",
-    "moonriver": "^4.0.0",
+    "intertype": "^0.112.0",
+    "moonriver": "^4.1.0",
     "paragate": "^4.0.0"
   }
 }
