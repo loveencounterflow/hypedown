@@ -35,3 +35,10 @@ GUY                       = require 'guy'
     stop  } = token
   return new_datom "^#{mode}", { mode, tid, mk: "#{mode}:#{tid}", jump, name, value, \
     lnr1: null, x1: null, lnr2: null, x2: null, data, $: ref, }
+
+#-----------------------------------------------------------------------------------------------------------
+@select_token = ( token, selector ) ->
+  return false unless token?
+  return false if token.$stamped ? false
+  return token.mk is selector
+
