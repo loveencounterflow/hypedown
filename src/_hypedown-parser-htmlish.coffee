@@ -20,23 +20,24 @@ GUY                       = require 'guy'
   echo
   log     }               = GUY.trm
 #...........................................................................................................
-{ Pipeline
-  transforms  } = require 'moonriver'
-HTMLISH         = ( require 'paragate/lib/htmlish.grammar' ).new_grammar { bare: true, }
-#...........................................................................................................
 { DATOM }                 = require 'datom'
 #...........................................................................................................
 { new_datom
   lets
   stamp }                 = DATOM
 TR                        = require './tag-registry'
+#...........................................................................................................
+HTMLISH                   = ( require 'paragate/lib/htmlish.grammar' ).new_grammar { bare: true, }
+{ Pipeline
+  Pipeline_module
+  $
+  transforms }            = require 'moonriver'
 
 
 #===========================================================================================================
 #
 #-----------------------------------------------------------------------------------------------------------
-@Hypedown_parser_htmlish = ( clasz = Object ) => class extends clasz
-
+class @Hypedown_parser_htmlish extends Pipeline_module
 
   #---------------------------------------------------------------------------------------------------------
   _hd_token_from_paragate_token: ( hd_token, pg_token ) ->
@@ -75,24 +76,24 @@ TR                        = require './tag-registry'
       R.data.message  = pg_token.message
     return R
 
-  #---------------------------------------------------------------------------------------------------------
-  $parse_htmlish: ->
-    p = new Pipeline()
-    p.push @$_normalize_tag_tokens()
-    p.push @$_collect_tag_tokens()
-    p.push @$_parse_tag_source()
-    p.push @$_parse_sole_slash()
-    return p
+  # #---------------------------------------------------------------------------------------------------------
+  # $parse_htmlish: ->
+  #   p = new Pipeline()
+  #   p.push @$normalize_tag_tokens()
+  #   p.push @$collect_tag_tokens()
+  #   p.push @$parse_tag_source()
+  #   p.push @$parse_sole_slash()
+  #   return p
 
   #---------------------------------------------------------------------------------------------------------
-  $_normalize_tag_tokens: =>
+  $normalize_tag_tokens: =>
     return _normalize_tag_tokens = ( d, send ) =>
       return send d unless d.mode is 'tag'
       return send d unless ( data = TR.pg_and_hd_tags[ d.tid ] )?
       send GUY.lft.lets d, ( d ) -> d.data = { d.data..., data..., }
 
   #---------------------------------------------------------------------------------------------------------
-  $_collect_tag_tokens: =>
+  $collect_tag_tokens: =>
     position  = null
     collector = null
     return _collect_tag_tokens = ( d, send ) =>
@@ -139,7 +140,7 @@ TR                        = require './tag-registry'
     return null
 
   #---------------------------------------------------------------------------------------------------------
-  $_parse_tag_source: =>
+  $parse_tag_source: =>
     return _parse_tag_source = ( d, send ) =>
       return send d unless d.mk is 'raw-html:tag'
       # send stamp d ### NOTE intentionally hiding `raw-html` token as it is condiered an implementation detail ###
@@ -153,7 +154,7 @@ TR                        = require './tag-registry'
       return null
 
   #---------------------------------------------------------------------------------------------------------
-  $_parse_sole_slash: =>
+  $parse_sole_slash: =>
     tag_type_stack = []
     return _parse_sole_slash = ( d, send ) =>
       switch d.mk
@@ -168,55 +169,3 @@ TR                        = require './tag-registry'
           send d
       return null
 
-# #-----------------------------------------------------------------------------------------------------------
-# new_parser = ( lexer ) ->
-
-#   #.........................................................................................................
-#   $_hd_token_from_paragate_token = ->
-#   #.........................................................................................................
-#   $parse_htmlish_tag  = ->
-#     collector   = []
-#     within_tag  = false
-#     sp          = new Pipeline()
-#     sp.push transforms.$window { min: 0, max: +1, empty: null, }
-#     sp.push parse_htmlish_tag = ( [ d, nxt, ], send ) ->
-#       #.....................................................................................................
-#       if within_tag
-#         collector.push d
-#         # debug '^parse_htmlish_tag@1^', d
-#         if d.jump is 'plain' ### TAINT magic number ###
-#           within_tag  = false
-#           $source     = ( e.value for e from collector ).join ''
-#           $collector  = [ collector..., ]
-#           send stamp collector.shift() while collector.length > 0
-#           htmlish     = HTMLISH.parse $source
-#           # H.tabulate '^78^', htmlish
-#           # debug '^78^', rpr $source
-#           # info '^78^', x for x in htmlish
-#           unless htmlish.length is 1
-#             ### TAINT use API to create token ###
-#             # throw new Error "^34345^ expected single token, got #{rpr htmlish}"
-#             return send { mode: 'tag', tid: '$error', }
-#           [ htmlish ]           = GUY.lft.thaw htmlish
-#           htmlish[htmlish_sym]  = true
-#           htmlish.$collector    = $collector
-#           htmlish.$source       = $source
-#           send htmlish
-#         return null
-#       #.....................................................................................................
-#       else
-#         return send d unless nxt?.mk.startsWith 'tag:'
-#         within_tag = true
-#         collector.push d
-#       #.....................................................................................................
-#       return null
-#     sp.push $_hd_token_from_paragate_token()
-#     return sp
-#   #.........................................................................................................
-#   p             = new Pipeline()
-#   p.lexer       = lexer
-#   p.push $tokenize p
-#   p.push $parse_htmlish_tag()
-#   # p.push show = ( d ) -> urge '^parser@1^', d
-#   # debug '^43^', p
-#   return p

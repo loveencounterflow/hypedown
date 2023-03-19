@@ -35,9 +35,6 @@ GUY                       = require 'guy'
   get_base_types }        = require './types'
 E                         = require './errors'
 H                         = require './helpers'
-{ Hypedown_parser_stars } = require './_hypedown-parser-stars'
-{ Hypedown_parser_htmlish } \
-                          = require './_hypedown-parser-htmlish'
 { Hypedown_lexer }        = require './_hypedown-lexer'
 
 
@@ -83,5 +80,81 @@ class @$010_prepare_paragraphs extends Pipeline_module
       send current
     return p
 
+#===========================================================================================================
+class @$020_priority_markup extends Pipeline_module
+  ### 'Priority markup': markup that blocks parsing of its contents, like codespans, in which stuff like
+  stars and double stars do not lead to `<em>`, `<strong>` tags ###
+
+  #---------------------------------------------------------------------------------------------------------
+  $parse_md_codespan: ->
+    ### TAINT consider to rewrite using `$window()` transform ###
+    ### TAINT use CFG pattern ###
+    ### TAINT use API for `mode:key` IDs ###
+    enter_mk  = "plain:codespan"
+    exit_mk   = "cspan:codespan"
+    text_mk   = "cspan:text"
+    escchr_mk = "cspan:escchr"
+    collector = []
+    #.......................................................................................................
+    flush = ->
+      last_idx      = collector.length - 1
+      first_txt_idx = 1
+      last_txt_idx  = last_idx - 1
+      lnr1          = ( collector.at  0 ).lnr1
+      lnr2          = ( collector.at -1 ).lnr2
+      x1            = ( collector.at  0 ).x1
+      x2            = ( collector.at -1 ).x2
+      texts         = []
+      #.....................................................................................................
+      for d, idx in collector
+        if ( idx is 0 )
+          yield stamp d
+          yield H.XXX_new_token 'parse_md_codespan', d, 'html', 'tag', 'code', '<code>'
+          continue
+        else if ( idx is last_idx )
+          yield stamp d
+          yield H.XXX_new_token 'parse_md_codespan', d, 'html', 'tag', 'code', '</code>'
+          continue
+        #...................................................................................................
+        switch d.mk
+          when text_mk
+            if      idx is first_txt_idx  then  texts.push d.value.trimStart()
+            else if idx is last_txt_idx   then  texts.push d.value.trimEnd()
+            else                                texts.push d.value
+          when escchr_mk
+            ### TAINT must properly resolve escaped character ###
+            texts.push d.data.chr
+          else
+            throw new Error "^^parse_md_codespan@32", "internal error: unhandled token #{rpr d}"
+        #...................................................................................................
+        if ( idx is last_txt_idx )
+          value = texts.join ''
+          ### TAINT should not use `html` or must escape first ###
+          yield { mode: 'html', tid: 'text', mk: 'html:text', value, lnr1, x1, lnr2, x2, }
+      #.....................................................................................................
+      collector.length = 0
+      return null
+    #.......................................................................................................
+    return parse_md_codespan = ( d, send ) ->
+      switch d.mk
+        when enter_mk, text_mk, escchr_mk
+          send stamp d
+          collector.push d
+        when exit_mk
+          collector.push d
+          send e for e from flush()
+        else
+          send d
+      return null
+
+
+#===========================================================================================================
+class @$030_htmlish_tags extends Pipeline_module
+  $: ( require './_hypedown-parser-htmlish' ).Hypedown_parser_htmlish
+
+
+#===========================================================================================================
+class @$040_stars extends Pipeline_module
+  $: ( require './_hypedown-parser-stars' ).Hypedown_parser_md_stars
 
 

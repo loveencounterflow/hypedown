@@ -67,12 +67,9 @@ class Hypedown_parser
       return null
     # @pipeline.push tfs.$show_lexer_tokens()
     @pipeline.push new XXX_TEMP.$010_prepare_paragraphs()
-    # @pipeline.push tfs.$inject_virtual_nl()
-    # @pipeline.push tfs.$add_parbreak_markers()
-    # @pipeline.push ( d ) -> urge '^965-1^', d.mk, rpr d.value
-    @pipeline.push tfs.$parse_md_codespan()
-    @pipeline.push tfs.$parse_htmlish()
-    @pipeline.push tfs.$parse_md_stars()
+    @pipeline.push new XXX_TEMP.$020_priority_markup()
+    @pipeline.push new XXX_TEMP.$030_htmlish_tags()
+    @pipeline.push new XXX_TEMP.$040_stars()
     @pipeline.push tfs.$parse_md_hashes { mode: 'plain', tid: 'hashes', }
     @pipeline.push tfs.$capture_text()
     @pipeline.push tfs.$generate_missing_p_tags()
