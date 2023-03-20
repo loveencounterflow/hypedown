@@ -63,21 +63,26 @@ class @$010_prepare_paragraphs extends Pipeline_module
 
   #---------------------------------------------------------------------------------------------------------
   $add_parbreak_markers: -> ### needs inject_virtual_nl ###
-    mode        = 'plain'
-    newline_lx  = "#{mode}:nl"
-    tid         = 'parbreak'
-    mk          = "html:#{tid}"
+    newline_mk  = 'plain:nl'
+    mk          = 'html:parbreak'
     p           = new Pipeline()
     template    = { \
-        mode: 'html', tid, mk, value: '', \
+        mode: 'html', tid: 'parbreak', mk, value: '', \
         $key: '^html', $: 'add_parbreak_markers', }
+    p.push ( d ) -> info '^3242^', d
+    p.push window = transforms.$window { min: -3, max: +3, empty: null, }
+    p.push ( ds, send ) -> help '^3242^', d?.mk ? '---' for d in ds; send ds.at 3
     p.push window = transforms.$window { min: -2, max: 0, empty: null, }
-    p.push add_parbreak_markers = ( [ lookbehind, previous, current, ], send ) ->
-      return send current unless ( H.select_token lookbehind,  newline_lx )
-      return send current unless ( H.select_token previous,    newline_lx )
-      return send current if     ( H.select_token current,     newline_lx )
-      send { template..., ( GUY.props.pick_with_fallback current, null, 'lnr1', 'x1', 'lnr2', 'x2', )..., }
-      send current
+    p.push ( ds ) -> urge '^3242^', d?.mk ? '---' for d in ds
+    p.push ( ds, send ) -> send ds.at -1
+    # p.push add_parbreak_markers = ( [ lookbehind, previous, current, ], send ) ->
+    #   debug '^3242^', [ lookbehind?.mk, previous?.mk, current?.mk, ]
+    #   debug '^3242^', previous if previous? and not previous.mk?
+    #   return send current unless ( H.select_token lookbehind,  newline_mk )
+    #   return send current unless ( H.select_token previous,    newline_mk )
+    #   return send current if     ( H.select_token current,     newline_mk )
+    #   send { template..., ( GUY.props.pick_with_fallback current, null, 'lnr1', 'x1', 'lnr2', 'x2', )..., }
+    #   send current
     return p
 
 #===========================================================================================================
