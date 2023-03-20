@@ -28,6 +28,8 @@ GUY                       = require 'guy'
   Hypedown_lexer }        = require './_hypedown-lexer'
 { Hypedown_parser
   XXX_new_token }         = require './_hypedown-parser'
+{ Pipeline
+  Pipeline_module }       = require 'moonriver'
 
 
 
@@ -40,4 +42,6 @@ module.exports = {
   Standard_sx
   Markdown_sx
   Hypedown_lexer
-  Hypedown_parser }
+  Hypedown_parser
+  Pipeline
+  Pipeline_module }
