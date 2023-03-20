@@ -70,7 +70,7 @@ class Hypedown_parser
     @pipeline.push new XXX_TEMP.$020_priority_markup()
     @pipeline.push new XXX_TEMP.$030_htmlish_tags()
     @pipeline.push new XXX_TEMP.$040_stars()
-    @pipeline.push tfs.$parse_md_hashes { mode: 'plain', tid: 'hashes', }
+    @pipeline.push new XXX_TEMP.$050_hash_headings()
     @pipeline.push tfs.$capture_text()
     @pipeline.push tfs.$generate_missing_p_tags()
     @pipeline.push tfs.$generate_html_nls { mode: 'plain', tid: 'nl', } ### NOTE removes virtual nl, should come late ###

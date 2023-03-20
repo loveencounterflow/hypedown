@@ -158,3 +158,21 @@ class @$040_stars extends Pipeline_module
   $: ( require './_hypedown-parser-stars' ).Hypedown_parser_md_stars
 
 
+#===========================================================================================================
+class @$050_hash_headings extends Pipeline_module
+  $: ->
+    mode          = 'plain'
+    tid           = 'hashes'
+    hashes_mk     = "#{mode}:#{tid}"
+    parbreak_mk   = 'html:parbreak'
+    prv_was_empty = false
+    p             = new Pipeline()
+    p.push window = transforms.$window { min: -1, max: 0, empty: null, }
+    p.push add_headings = ( [ previous, d, ], send ) ->
+      return send d unless ( previous?.mk is parbreak_mk ) and ( d.mk is hashes_mk )
+      send stamp d
+      name = "h#{d.data.text.length}"
+      send H.XXX_new_token '050_hash_headings', d, 'html', 'tag', name, "<#{name}>"
+      return null
+    return p
+

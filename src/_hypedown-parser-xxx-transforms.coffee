@@ -53,21 +53,6 @@ class XXX_Hypedown_transforms
       return null
 
 
-
-  #---------------------------------------------------------------------------------------------------------
-  $parse_md_hashes: ({ mode, tid, }) ->
-    mode         ?= 'plain'
-    tid          ?= 'hashes'
-    hashes_mk     = "#{mode}:#{tid}"
-    prv_was_empty = false
-    return ( d, send ) ->
-      return send d unless d.mk is hashes_mk
-      send stamp d
-      name = "h#{d.data.text.length}"
-      send H.XXX_new_token 'parse_md_hashes', d, 'html', 'tag', name, "<#{name}>"
-      return null
-
-
   #=========================================================================================================
   # FINALIZATION
   #---------------------------------------------------------------------------------------------------------
