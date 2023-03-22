@@ -50,7 +50,7 @@ class @Hypedown_parser_htmlish extends Pipeline_module
       unless ( tid = TR.pg_and_hd_tags[ pg_token.type ]?.type )?
         debug '^35345^', hd_token
         debug '^35345^', pg_token
-        return GUY.lft.lets hd_token, ( d ) =>
+        return GUY.lft.lets hd_token, ( d ) ->
           message = "unable to find pg_token.type #{rpr pg_token.type} in TR.pg_and_hd_tags"
           d.mode  = 'tag'
           d.tid   = '$error'
@@ -86,17 +86,17 @@ class @Hypedown_parser_htmlish extends Pipeline_module
   #   return p
 
   #---------------------------------------------------------------------------------------------------------
-  $normalize_tag_tokens: =>
-    return _normalize_tag_tokens = ( d, send ) =>
+  $normalize_tag_tokens: ->
+    return _normalize_tag_tokens = ( d, send ) ->
       return send d unless d.mode is 'tag'
       return send d unless ( data = TR.pg_and_hd_tags[ d.tid ] )?
       send GUY.lft.lets d, ( d ) -> d.data = { d.data..., data..., }
 
   #---------------------------------------------------------------------------------------------------------
-  $collect_tag_tokens: =>
+  $collect_tag_tokens: ->
     position  = null
     collector = null
-    return _collect_tag_tokens = ( d, send ) =>
+    return _collect_tag_tokens = ( d, send ) ->
       if d.tid is '$border'
         #...................................................................................................
         if d.data.nxt is 'tag'
@@ -140,8 +140,8 @@ class @Hypedown_parser_htmlish extends Pipeline_module
     return null
 
   #---------------------------------------------------------------------------------------------------------
-  $parse_tag_source: =>
-    return _parse_tag_source = ( d, send ) =>
+  $parse_tag_source: ->
+    return _parse_tag_source = ( d, send ) ->
       return send d unless d.mk is 'raw-html:tag'
       # send stamp d ### NOTE intentionally hiding `raw-html` token as it is condiered an implementation detail ###
       pg_tokens = HTMLISH.parse d.value
@@ -154,9 +154,9 @@ class @Hypedown_parser_htmlish extends Pipeline_module
       return null
 
   #---------------------------------------------------------------------------------------------------------
-  $parse_sole_slash: =>
+  $parse_sole_slash: ->
     tag_type_stack = []
-    return _parse_sole_slash = ( d, send ) =>
+    return _parse_sole_slash = ( d, send ) ->
       switch d.mk
         when 'tag:otag', 'tag:ctag', 'tag:ntag', 'tag:nctag', 'tag:stag'
           tag_type_stack.push d.type
