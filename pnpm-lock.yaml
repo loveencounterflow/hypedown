@@ -5,7 +5,7 @@ specifiers:
   guy: ^13.2.0
   intertext-lexer: ^0.21.0
   intertype: ^0.112.0
-  moonriver: ^4.1.0
+  moonriver: ^4.4.0
   paragate: ^4.0.0
 
 dependencies:
@@ -13,7 +13,7 @@ dependencies:
   guy: 13.2.0
   intertext-lexer: 0.21.0
   intertype: 0.112.0
-  moonriver: 4.1.0
+  moonriver: 4.4.0
   paragate: 4.0.0
 
 packages:
@@ -180,7 +180,7 @@ packages:
       guy: 13.2.0
       intertype: 0.111.0
       ltsort: 4.0.0
-      moonriver: 4.1.0
+      moonriver: 4.4.0
     transitivePeerDependencies:
       - acorn
       - acorn-loose
@@ -295,8 +295,8 @@ packages:
       - tmp
     dev: false
 
-  /moonriver/4.1.0:
-    resolution: {integrity: sha512-jy11cah5vsNt9VsboPbwDmI63k1hpbC65J+k8DZx8lljQS75C4lj4WzPAOkNGG+EnpFqlXwqa+S5/nnVoJn+Sw==}
+  /moonriver/4.4.0:
+    resolution: {integrity: sha512-fX4L81rCUyxH9xWirU5Xqe5ZhAyWf/NCy+/cgA+aVuPJ4efwZIN7hIMo46Dgh8+QJSOh3MDmXjQyUizy0Un36g==}
     dependencies:
       guy: 13.2.0
       intertext-splitlines: 1.2.1
