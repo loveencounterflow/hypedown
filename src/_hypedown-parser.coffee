@@ -61,11 +61,7 @@ class Hypedown_parser
     @pipeline = new Pipeline()
     #.........................................................................................................
     @pipeline.push new XXX_TEMP.$001_Prelude()
-    @pipeline.push tokenize_line = ( line, send ) =>
-      @types.validate.text line
-      send token for token from @lexer.walk line
-      return null
-    # @pipeline.push tfs.$show_lexer_tokens()
+    @pipeline.push new XXX_TEMP.$002_tokenize_lines()
     @pipeline.push new XXX_TEMP.$010_prepare_paragraphs()
     @pipeline.push new XXX_TEMP.$020_priority_markup()
     @pipeline.push new XXX_TEMP.$030_htmlish_tags()
