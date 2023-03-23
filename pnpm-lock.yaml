@@ -2,18 +2,18 @@ lockfileVersion: 5.4
 
 specifiers:
   datom: ^11.0.0
-  guy: ^13.2.0
+  guy: ^13.3.0
   intertext-lexer: ^0.21.0
   intertype: ^0.112.0
-  moonriver: ^4.4.0
+  moonriver: ^4.6.0
   paragate: ^4.0.0
 
 dependencies:
   datom: 11.0.0
-  guy: 13.2.0
+  guy: 13.3.0
   intertext-lexer: 0.21.0
   intertype: 0.112.0
-  moonriver: 4.4.0
+  moonriver: 4.6.0
   paragate: 4.0.0
 
 packages:
@@ -153,8 +153,8 @@ packages:
       letsfreezethat: 3.1.0
     dev: false
 
-  /guy/13.2.0:
-    resolution: {integrity: sha512-YdE19XaufMS4NwpdJfBEL4hm+xmaQoEWrU76WHalV+oN4xHW/W3XAgcoCfEwCdSJpu8rLSEVSTzU80qJRdbOQw==}
+  /guy/13.3.0:
+    resolution: {integrity: sha512-tfomLp5oW4VDtgqYqlr7AUkmW5be8jvnu44vFkliuhBD8d3WmHWruY0qrONnMaC8tZMAZeGNiqAVfTCSGTcMBA==}
     peerDependencies:
       acorn: ^8.7.1
       acorn-loose: ^8.3.0
@@ -177,10 +177,10 @@ packages:
     dependencies:
       compose-regexp-commonjs: 0.6.24
       datom: 11.0.0
-      guy: 13.2.0
+      guy: 13.3.0
       intertype: 0.111.0
       ltsort: 4.0.0
-      moonriver: 4.4.0
+      moonriver: 4.6.0
     transitivePeerDependencies:
       - acorn
       - acorn-loose
@@ -295,10 +295,10 @@ packages:
       - tmp
     dev: false
 
-  /moonriver/4.4.0:
-    resolution: {integrity: sha512-fX4L81rCUyxH9xWirU5Xqe5ZhAyWf/NCy+/cgA+aVuPJ4efwZIN7hIMo46Dgh8+QJSOh3MDmXjQyUizy0Un36g==}
+  /moonriver/4.6.0:
+    resolution: {integrity: sha512-gcKowpbdeobSOeMEO2yJPMU6C+uhtJgSMaHomF19l4DfWy2psoAq4YqoJTYzvvbWIgGDcmLRzC+MxDmwov+ruw==}
     dependencies:
-      guy: 13.2.0
+      guy: 13.3.0
       intertext-splitlines: 1.2.1
       intertype: 0.112.0
       jfee: 0.1.4
