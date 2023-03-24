@@ -60,7 +60,7 @@ class Hypedown_parser
     tfs       = new XXX_Hypedown_transforms()
     @pipeline = new Pipeline()
     #.........................................................................................................
-    @pipeline.push new XXX_TEMP.$001_Prelude()
+    @pipeline.push new XXX_TEMP.$001_prelude()
     @pipeline.push new XXX_TEMP.$002_tokenize_lines()
     @pipeline.push new XXX_TEMP.$010_prepare_paragraphs()
     @pipeline.push new XXX_TEMP.$020_priority_markup()
