@@ -90,25 +90,23 @@ class @$010_prepare_paragraphs extends Transformer
       if count > 1
         position.lnr2 = position.lnr1 + count - 1
         position.x2   = 0
-      nls         = { template..., value, position..., }
-      nls.data    = { virtual: true, } if is_virtual
-      count       = 0
-      position    = null
-      is_virtual  = null
+      data          = { count, }
+      data.virtual  = true if is_virtual
+      nls           = { template..., value, data, position..., }
+      count         = 0
+      position      = null
+      is_virtual    = null
       send nls
     #.......................................................................................................
     return $ { stop, }, consolidate_newlines = ( d, send ) =>
-      # debug '^35345^', d.mk, rpr d.value
       return flush send if d is stop
       return send d if d.$stamped
       if d.mk is 'plain:nl'
         count++
         position   ?= H.get_position d
         is_virtual  = if d.data?.virtual then true else false
-        urge '^consolidate_newlines@1^', count, position
       else
         flush send
-        info '^consolidate_newlines@1^', count, position
         send d
       return null
 
@@ -145,9 +143,9 @@ class @$010_prepare_paragraphs extends Transformer
         return null if d is stop
         if nxt is stop
           if has_pars
-            return send get_stop_token d
-          return null
-        return send d unless H.select_token d, newlines_mk
+            send get_stop_token d
+          return send d
+        return send d unless ( H.select_token d, newlines_mk ) and ( d.data.count > 1 )
         unless d.data?.virtual
           send get_stop_token d
           send d
