@@ -49,9 +49,9 @@ class @$002_tokenize_lines extends Transformer
   $tokenize_line: ->
     types = get_base_types()
     lexer = new Hypedown_lexer()
-    debug '^3523^', @constructor.name
+    # debug '^3523^', @constructor.name
     return ( line, send ) ->
-      debug '^3523^', @constructor.name
+      # debug '^3523^', @constructor.name
       types.validate.text line
       send token for token from lexer.walk line
       return null
