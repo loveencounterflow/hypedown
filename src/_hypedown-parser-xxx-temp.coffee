@@ -76,21 +76,83 @@ class @$010_prepare_paragraphs extends Transformer
       send d
 
   #---------------------------------------------------------------------------------------------------------
+  $consolidate_newlines: -> ### needs inject_virtual_nl ###
+    count       = 0
+    position    = null
+    is_virtual  = null
+    stop        = Symbol 'stop'
+    template    = { mode: 'plain', tid: 'nls', mk: 'plain:nls', $: 'consolidate_newlines', }
+    #.......................................................................................................
+    flush = ( send ) =>
+      return null if count is 0
+      value         = '\n'.repeat count
+      position.lnr2 = position.lnr1 + count
+      if count > 1
+        position.lnr2 = position.lnr1 + count - 1
+        position.x2   = 0
+      nls         = { template..., value, position..., }
+      nls.data    = { virtual: true, } if is_virtual
+      count       = 0
+      position    = null
+      is_virtual  = null
+      send nls
+    #.......................................................................................................
+    return $ { stop, }, consolidate_newlines = ( d, send ) =>
+      # debug '^35345^', d.mk, rpr d.value
+      return flush send if d is stop
+      return send d if d.$stamped
+      if d.mk is 'plain:nl'
+        count++
+        position   ?= H.get_position d
+        is_virtual  = if d.data?.virtual then true else false
+        urge '^consolidate_newlines@1^', count, position
+      else
+        flush send
+        info '^consolidate_newlines@1^', count, position
+        send d
+      return null
+
+  #---------------------------------------------------------------------------------------------------------
   $add_parbreak_markers: -> ### needs inject_virtual_nl ###
-    newline_mk  = 'plain:nl'
-    mk          = 'html:parbreak'
-    p           = new Pipeline()
-    template    = { \
-        mode: 'html', tid: 'parbreak', mk, value: '', \
-        $key: '^html', $: 'add_parbreak_markers', }
-    p.push window = transforms.$window { min: -2, max: 0, empty: null, }
-    p.push add_parbreak_markers = ( [ lookbehind, previous, current, ], send ) ->
-      return send current unless ( H.select_token lookbehind,  newline_mk )
-      return send current unless ( H.select_token previous,    newline_mk )
-      return send current if     ( H.select_token current,     newline_mk )
-      send { template..., ( GUY.props.pick_with_fallback current, null, 'lnr1', 'x1', 'lnr2', 'x2', )..., }
-      send current
-    return p
+    newlines_mk = 'plain:nls'
+    tid_start   = 'par:start'
+    tid_stop    = 'par:stop'
+    mk_start    = 'html:par:start'
+    mk_stop     = 'html:par:stop'
+    stop        = Symbol 'stop'
+    has_pars    = false
+    #.......................................................................................................
+    get_start_token = ( ref ) -> {
+      mode:     'html'
+      tid:      tid_start
+      mk:       mk_start
+      value:    ''
+      ( H.get_position ref )...
+      $:        'add_parbreak_markers' }
+    #.......................................................................................................
+    get_stop_token = ( ref ) -> {
+      mode:     'html'
+      tid:      tid_stop
+      mk:       mk_stop
+      value:    ''
+      ( H.get_position ref )...
+      $:        'add_parbreak_markers' }
+    #-------------------------------------------------------------------------------------------------------
+    return class add_parbreak_markers extends Transformer
+      $add_stop:              -> $ { stop, }, ( d, send ) -> send d
+      $window:                -> transforms.$window { min: 0, max: +1, empty: null, }
+      $add_parbreak_markers:  -> ( [ d, nxt, ], send ) ->
+        return null if d is stop
+        if nxt is stop
+          if has_pars
+            return send get_stop_token d
+          return null
+        return send d unless H.select_token d, newlines_mk
+        unless d.data?.virtual
+          send get_stop_token d
+          send d
+        send get_start_token d
+        has_pars = true
 
 #===========================================================================================================
 class @$020_priority_markup extends Transformer
