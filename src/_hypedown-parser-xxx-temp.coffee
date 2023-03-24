@@ -112,18 +112,18 @@ class @$010_prepare_paragraphs extends Transformer
 
   #---------------------------------------------------------------------------------------------------------
   $add_parbreak_markers: -> ### needs inject_virtual_nl ###
-    newlines_mk = 'plain:nls'
-    tid_start   = 'par:start'
-    tid_stop    = 'par:stop'
-    mk_start    = 'html:par:start'
-    mk_stop     = 'html:par:stop'
-    stop        = Symbol 'stop'
-    has_pars    = false
+    newlines_mk   = 'plain:nls'
+    tid_start     = 'par:start'
+    tid_stop      = 'par:stop'
+    par_start_mk  = 'html:par:start'
+    par_stop_mk   = 'html:par:stop'
+    stop          = Symbol 'stop'
+    has_pars      = false
     #.......................................................................................................
     get_start_token = ( ref ) -> {
       mode:     'html'
       tid:      tid_start
-      mk:       mk_start
+      mk:       par_start_mk
       value:    ''
       ( H.get_position ref )...
       $:        'add_parbreak_markers' }
@@ -131,7 +131,7 @@ class @$010_prepare_paragraphs extends Transformer
     get_stop_token = ( ref ) -> {
       mode:     'html'
       tid:      tid_stop
-      mk:       mk_stop
+      mk:       par_stop_mk
       value:    ''
       ( H.get_position ref )...
       $:        'add_parbreak_markers' }
