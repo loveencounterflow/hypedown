@@ -233,18 +233,55 @@ class @$040_stars extends Transformer
 #===========================================================================================================
 class @$050_hash_headings extends Transformer
   $: ->
-    mode          = 'plain'
-    tid           = 'hashes'
-    hashes_mk     = "#{mode}:#{tid}"
-    parbreak_mk   = 'html:parbreak'
+    hashes_mk     = "plain:hashes"
+    par_start_mk  = 'html:par:start'
+    par_stop_mk   = 'html:par:stop'
     prv_was_empty = false
-    p             = new Pipeline()
-    p.push window = transforms.$window { min: -1, max: 0, empty: null, }
-    p.push add_headings = ( [ previous, d, ], send ) ->
-      return send d unless ( previous?.mk is parbreak_mk ) and ( d.mk is hashes_mk )
-      send stamp d
-      name = "h#{d.data.text.length}"
-      send H.XXX_new_token '050_hash_headings', d, 'html', 'tag', name, "<#{name}>"
-      return null
-    return p
+    within_h      = false
+    level         = null
+    position      = null
+    #.......................................................................................................
+    get_start_token = ({ ref, name, level, }) ->
+      return {
+        mode:     'html'
+        tid:      'p:start'
+        mk:       'html:h:start'
+        data:     { name, level, }
+        value:    "<#{name}>"
+        ( H.get_position ref )...
+        $:        '050_hash_headings' }
+    #.......................................................................................................
+    get_stop_token = ({ ref, name, level, }) ->
+      position_2    = H.get_position ref
+      position.lnr2 = position_2.lnr2
+      position.x2   = position_2.x2
+      return {
+        mode:     'html'
+        tid:      'p:stop'
+        mk:       'html:h:stop'
+        data:     { name, level, }
+        value:    "</#{name}>"
+        position...
+        $:        '050_hash_headings' }
+    #-------------------------------------------------------------------------------------------------------
+    return class add_headings_markup extends Transformer
+      $window:        -> transforms.$window { min: -1, max: +1, empty: null, }
+      $add_headings:  -> ( [ prv, d, nxt, ], send ) ->
+        if ( prv?.mk is par_start_mk ) and ( d.mk is hashes_mk )
+          send stamp d
+          position  = H.get_position d
+          within_h  = true
+          level     = d.data.text.length
+          name      = "h#{level}"
+          send get_start_token { ref: d, name, level, }
+        else if within_h and ( nxt?.mk is par_stop_mk )
+          send d
+          name      = "h#{level}"
+          send get_stop_token { ref: d, name, level, }
+          level     = null
+          within_h  = false
+          position  = null
+        else
+          send d
+        return null
 
