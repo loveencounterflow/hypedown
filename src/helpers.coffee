@@ -42,3 +42,6 @@ GUY                       = require 'guy'
   return false if token.$stamped ? false
   return token.mk is selector
 
+#-----------------------------------------------------------------------------------------------------------
+@get_position = ( token ) -> GUY.props.pick_with_fallback token, null, 'lnr1', 'x1', 'lnr2', 'x2'
+
