@@ -25,12 +25,12 @@ GUY                       = require 'guy'
   stamp  }                = DATOM
 E                         = require './errors'
 H                         = require './helpers'
-{ Pipeline_module }       = require 'moonriver'
+{ Transformer }           = require 'moonriver'
 { sorter }                = require 'intertext-lexer'
 
 
 #===========================================================================================================
-class @Hypedown_parser_md_stars extends Pipeline_module
+class @Hypedown_parser_md_stars extends Transformer
 
   #-----------------------------------------------------------------------------------------------------------
   $parse_md_stars: ->

@@ -29,7 +29,7 @@ TR                        = require './tag-registry'
 #...........................................................................................................
 HTMLISH                   = ( require 'paragate/lib/htmlish.grammar' ).new_grammar { bare: true, }
 { Pipeline
-  Pipeline_module
+  Transformer
   $
   transforms }            = require 'moonriver'
 
@@ -37,7 +37,7 @@ HTMLISH                   = ( require 'paragate/lib/htmlish.grammar' ).new_gramm
 #===========================================================================================================
 #
 #-----------------------------------------------------------------------------------------------------------
-class @Hypedown_parser_htmlish extends Pipeline_module
+class @Hypedown_parser_htmlish extends Transformer
 
   #---------------------------------------------------------------------------------------------------------
   _hd_token_from_paragate_token: ( hd_token, pg_token ) ->

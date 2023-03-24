@@ -29,7 +29,7 @@ GUY                       = require 'guy'
 { Hypedown_parser
   XXX_new_token }         = require './_hypedown-parser'
 { Pipeline
-  Pipeline_module }       = require 'moonriver'
+  Transformer }           = require 'moonriver'
 
 
 
@@ -44,4 +44,4 @@ module.exports = {
   Hypedown_lexer
   Hypedown_parser
   Pipeline
-  Pipeline_module }
+  Transformer }

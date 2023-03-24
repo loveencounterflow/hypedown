@@ -27,7 +27,7 @@ GUY                       = require 'guy'
   stamp }                = DATOM
 #...........................................................................................................
 { Pipeline
-  Pipeline_module
+  Transformer
   $
   transforms }            = require 'moonriver'
 #...........................................................................................................
@@ -39,11 +39,11 @@ H                         = require './helpers'
 
 
 #===========================================================================================================
-class @$001_Prelude extends Pipeline_module
+class @$001_Prelude extends Transformer
 
 
 #===========================================================================================================
-class @$002_tokenize_lines extends Pipeline_module
+class @$002_tokenize_lines extends Transformer
 
   #---------------------------------------------------------------------------------------------------------
   $tokenize_line: ->
@@ -57,7 +57,7 @@ class @$002_tokenize_lines extends Pipeline_module
       return null
 
 #===========================================================================================================
-class @$010_prepare_paragraphs extends Pipeline_module
+class @$010_prepare_paragraphs extends Transformer
 
   #---------------------------------------------------------------------------------------------------------
   $inject_virtual_nl: ->
@@ -93,7 +93,7 @@ class @$010_prepare_paragraphs extends Pipeline_module
     return p
 
 #===========================================================================================================
-class @$020_priority_markup extends Pipeline_module
+class @$020_priority_markup extends Transformer
   ### 'Priority markup': markup that blocks parsing of its contents, like codespans, in which stuff like
   stars and double stars do not lead to `<em>`, `<strong>` tags ###
 
@@ -161,17 +161,17 @@ class @$020_priority_markup extends Pipeline_module
 
 
 #===========================================================================================================
-class @$030_htmlish_tags extends Pipeline_module
+class @$030_htmlish_tags extends Transformer
   $: ( require './_hypedown-parser-htmlish' ).Hypedown_parser_htmlish
 
 
 #===========================================================================================================
-class @$040_stars extends Pipeline_module
+class @$040_stars extends Transformer
   $: ( require './_hypedown-parser-stars' ).Hypedown_parser_md_stars
 
 
 #===========================================================================================================
-class @$050_hash_headings extends Pipeline_module
+class @$050_hash_headings extends Transformer
   $: ->
     mode          = 'plain'
     tid           = 'hashes'
