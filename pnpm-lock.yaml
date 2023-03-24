@@ -2,18 +2,18 @@ lockfileVersion: 5.4
 
 specifiers:
   datom: ^11.0.0
-  guy: ^13.3.0
+  guy: ^13.5.0
   intertext-lexer: ^0.21.0
-  intertype: ^0.112.0
-  moonriver: ^4.6.0
+  intertype: ^0.113.0
+  moonriver: ^4.7.0
   paragate: ^4.0.0
 
 dependencies:
   datom: 11.0.0
-  guy: 13.3.0
+  guy: 13.5.0
   intertext-lexer: 0.21.0
-  intertype: 0.112.0
-  moonriver: 4.6.0
+  intertype: 0.113.0
+  moonriver: 4.7.0
   paragate: 4.0.0
 
 packages:
@@ -153,8 +153,22 @@ packages:
       letsfreezethat: 3.1.0
     dev: false
 
-  /guy/13.3.0:
-    resolution: {integrity: sha512-tfomLp5oW4VDtgqYqlr7AUkmW5be8jvnu44vFkliuhBD8d3WmHWruY0qrONnMaC8tZMAZeGNiqAVfTCSGTcMBA==}
+  /guy/13.4.1:
+    resolution: {integrity: sha512-on37Rey168p+CO6VqXgt7QlSUwDMZz+AtkzBNMo7Ez5v27sSPZcp+oj74Htx/DnLon+RfkJgs7BCuwpr6wwoaQ==}
+    peerDependencies:
+      acorn: ^8.7.1
+      acorn-loose: ^8.3.0
+      acorn-walk: ^8.2.0
+      astring: ^1.8.3
+      dayjs: ^1.11.7
+      tmp: ^0.2.1
+    dependencies:
+      intertype-legacy: 7.7.1
+      letsfreezethat: 3.1.0
+    dev: false
+
+  /guy/13.5.0:
+    resolution: {integrity: sha512-GHHY/Ay1RvjQyFfv6giKc/MFGP8RiLYmBYFVHsjuRJ2EQj+RAZfWs1U7wAQF/Vnrdq83f+gEHbrDefnL9Eh+sg==}
     peerDependencies:
       acorn: ^8.7.1
       acorn-loose: ^8.3.0
@@ -177,10 +191,10 @@ packages:
     dependencies:
       compose-regexp-commonjs: 0.6.24
       datom: 11.0.0
-      guy: 13.3.0
+      guy: 13.5.0
       intertype: 0.111.0
       ltsort: 4.0.0
-      moonriver: 4.6.0
+      moonriver: 4.7.0
     transitivePeerDependencies:
       - acorn
       - acorn-loose
@@ -233,8 +247,8 @@ packages:
       - tmp
     dev: false
 
-  /intertype/0.112.0:
-    resolution: {integrity: sha512-4BM83SygeggNtzD01afJxwGcTBZE0EjR+hutqtonkEa+aiPxFtZ3yV1amvvyCKJ6onUrUJ+S8kXXEzoOsJDhVA==}
+  /intertype/0.113.0:
+    resolution: {integrity: sha512-j3/p8HAKOQ4WEu7vB+Y6MT6gGaIlleNzL902PYrgNEFx4Ip6xfhXNxxtvFd222+ABfL4DRRKCMEyo7i8zeIb8Q==}
     dependencies:
       guy: 11.12.0
       intertype-legacy: 7.7.1
@@ -295,12 +309,12 @@ packages:
       - tmp
     dev: false
 
-  /moonriver/4.6.0:
-    resolution: {integrity: sha512-gcKowpbdeobSOeMEO2yJPMU6C+uhtJgSMaHomF19l4DfWy2psoAq4YqoJTYzvvbWIgGDcmLRzC+MxDmwov+ruw==}
+  /moonriver/4.7.0:
+    resolution: {integrity: sha512-AueRoF7YDpUIYUhIsWnCurC4TPWb9KusnaWBf/NUlvO59AdNR5a9aT9O6prAL7+xMGApTRmX+PgclpsD6NtO7Q==}
     dependencies:
-      guy: 13.3.0
+      guy: 13.4.1
       intertext-splitlines: 1.2.1
-      intertype: 0.112.0
+      intertype: 0.113.0
       jfee: 0.1.4
     transitivePeerDependencies:
       - acorn
