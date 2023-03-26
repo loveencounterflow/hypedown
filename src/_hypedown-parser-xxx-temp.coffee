@@ -60,23 +60,7 @@ class @$002_tokenize_lines extends Transformer
 class @$010_prepare_paragraphs extends Transformer
 
   #---------------------------------------------------------------------------------------------------------
-  $inject_virtual_nl: ->
-    ### normalize start of document by injecting two newlines. ###
-    is_first  = true
-    mode      = 'plain'
-    tid       = 'nl'
-    mk        = "#{mode}:#{tid}"
-    return ( d, send ) ->
-      return send d unless is_first
-      is_first = false
-      send { mode, tid, mk, jump: null, value: '', lnr1: 1, x1: 0, lnr2: 1, x2: 0, \
-        data: { virtual: true, }, $key: '^plain', $: 'inject_virtual_nl', }
-      send { mode, tid, mk, jump: null, value: '', lnr1: 1, x1: 0, lnr2: 1, x2: 0, \
-        data: { virtual: true, }, $key: '^plain', $: 'inject_virtual_nl', }
-      send d
-
-  #---------------------------------------------------------------------------------------------------------
-  $consolidate_newlines: -> ### needs inject_virtual_nl ###
+  $consolidate_newlines: ->
     count       = 0
     position    = null
     is_virtual  = null
@@ -91,11 +75,9 @@ class @$010_prepare_paragraphs extends Transformer
         position.lnr2 = position.lnr1 + count - 1
         position.x2   = 0
       data          = { count, }
-      data.virtual  = true if is_virtual
       nls           = { template..., value, data, position..., }
       count         = 0
       position      = null
-      is_virtual    = null
       send nls
     #.......................................................................................................
     return $ { stop, }, consolidate_newlines = ( d, send ) =>
@@ -104,14 +86,27 @@ class @$010_prepare_paragraphs extends Transformer
       if d.mk is 'plain:nl'
         count++
         position   ?= H.get_position d
-        is_virtual  = if d.data?.virtual then true else false
       else
         flush send
         send d
       return null
 
   #---------------------------------------------------------------------------------------------------------
-  $add_parbreak_markers: -> ### needs inject_virtual_nl ###
+  $inject_starter: ->
+    ### normalize start of document by injecting two newlines. ###
+    is_first  = true
+    mode      = 'prep'
+    tid       = 'starter'
+    mk        = "#{mode}:#{tid}"
+    return ( d, send ) ->
+      return send d unless is_first
+      return send d if /^\s*$/.test d.value
+      is_first = false
+      send { d..., mode, tid, mk, jump: null, value: '', $: 'inject_starter', }
+      send d
+
+  #---------------------------------------------------------------------------------------------------------
+  $add_parbreak_markers: ->
     newlines_mk   = 'plain:nls'
     tid_start     = 'par:start'
     tid_stop      = 'par:stop'
@@ -119,6 +114,7 @@ class @$010_prepare_paragraphs extends Transformer
     par_stop_mk   = 'html:par:stop'
     stop          = Symbol 'stop'
     has_pars      = false
+    started       = false
     #.......................................................................................................
     get_start_token = ( ref ) -> {
       mode:     'html'
@@ -141,16 +137,22 @@ class @$010_prepare_paragraphs extends Transformer
       $window:                -> transforms.$window { min: 0, max: +1, empty: null, }
       $add_parbreak_markers:  -> ( [ d, nxt, ], send ) ->
         return null if d is stop
+        if d.mk is 'prep:starter'
+          send stamp d
+          started = true
+        return send d unless started
         if nxt is stop
           if has_pars
             send get_stop_token d
           return send d
-        return send d unless ( H.select_token d, newlines_mk ) and ( d.data.count > 1 )
-        unless d.data?.virtual
-          send get_stop_token d
-          send d
+        return send d unless ( d.mk is 'prep:starter' ) or ( H.select_token d, newlines_mk ) and ( d.data.count > 1 )
+        send get_stop_token d if has_pars
+        send d unless d.mk is 'prep:starter'
         send get_start_token d
         has_pars = true
+        return null
+
+  # $show_1: -> show_1 = ( d ) -> info d
 
 #===========================================================================================================
 class @$020_priority_markup extends Transformer
