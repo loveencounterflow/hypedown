@@ -23,7 +23,7 @@
     "guy": "^13.5.0",
     "intertext-lexer": "^0.21.0",
     "intertype": "^0.113.0",
-    "moonriver": "^4.7.0",
+    "moonriver": "^4.8.0",
     "paragate": "^4.0.0"
   }
 }
