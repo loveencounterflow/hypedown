@@ -93,7 +93,6 @@ class @$010_prepare_paragraphs extends Transformer
 
   #---------------------------------------------------------------------------------------------------------
   $inject_starter: ->
-    ### normalize start of document by injecting two newlines. ###
     is_first  = true
     mode      = 'prep'
     tid       = 'starter'
@@ -164,60 +163,70 @@ class @$020_priority_markup extends Transformer
     ### TAINT consider to rewrite using `$window()` transform ###
     ### TAINT use CFG pattern ###
     ### TAINT use API for `mode:key` IDs ###
-    enter_mk  = "plain:codespan"
-    exit_mk   = "cspan:codespan"
-    text_mk   = "cspan:text"
-    escchr_mk = "cspan:escchr"
+    enter_mk  = 'cspan:start'
+    text_mk   = 'cspan:text'
+    nl_mk     = 'cspan:nl'
+    escchr_mk = 'cspan:escchr'
+    exit_mk   = 'cspan:stop'
     collector = []
     stop      = Symbol 'stop'
     #.......................................................................................................
-    flush = ->
-      last_idx      = collector.length - 1
-      first_txt_idx = 1
-      last_txt_idx  = last_idx - 1
-      lnr1          = ( collector.at  0 ).lnr1
-      lnr2          = ( collector.at -1 ).lnr2
-      x1            = ( collector.at  0 ).x1
-      x2            = ( collector.at -1 ).x2
-      texts         = []
-      #.....................................................................................................
-      for d, idx in collector
-        urge '^flush^', d.mk, ( rpr d.value ), ( idx is 0 ), ( idx is last_idx )
-        if ( idx is 0 )
-          yield stamp d
-          yield H.XXX_new_token 'parse_md_codespan', d, 'html', 'tag', 'code', '<code>'
-          continue
-        #...................................................................................................
-        switch d.mk
-          when text_mk
-            if      idx is first_txt_idx  then  texts.push d.value.trimStart()
-            else if idx is last_txt_idx   then  texts.push d.value.trimEnd()
-            else                                texts.push d.value
-          when escchr_mk
-            ### TAINT must properly resolve escaped character ###
-            texts.push d.data.chr
-          else
-            throw new Error "^^parse_md_codespan@32", "internal error: unhandled token #{rpr d}"
-        #...................................................................................................
-        if ( idx is last_txt_idx )
-          value = texts.join ''
-          ### TAINT should not use `html` or must escape first ###
-          yield { mode: 'html', tid: 'text', mk: 'html:text', value, lnr1, x1, lnr2, x2, }
-      ### TAINT must account for case when parsing ends before closing markup ###
-      yield H.XXX_new_token 'parse_md_codespan', d, 'html', 'tag', 'code', '</code>'
-      #.....................................................................................................
-      collector.length = 0
-      return null
+    $flush = ->
+      class Flush extends Transformer
+        $source: -> collector
+        $show_1: -> ( d ) ->
+          urge '^flush.show_1^', collector.length, d
+        $on_stop: -> $ { stop }, ( d ) ->
+          collector.length = 0 if d is stop
+      return Flush.as_pipeline()
+    _flush = $flush()
+    flush = -> yield from _flush.walk_and_stop()
+    # #.......................................................................................................
+    # flush = ->
+    #   last_idx      = collector.length - 1
+    #   first_txt_idx = 1
+    #   last_txt_idx  = last_idx - 1
+    #   lnr1          = ( collector.at  0 ).lnr1
+    #   lnr2          = ( collector.at -1 ).lnr2
+    #   x1            = ( collector.at  0 ).x1
+    #   x2            = ( collector.at -1 ).x2
+    #   texts         = []
+    #   #.....................................................................................................
+    #   for d, idx in collector
+    #     urge '^flush^', d.mk, ( rpr d.value ), ( idx is 0 ), ( idx is last_idx )
+    #     if ( idx is 0 )
+    #       yield stamp d
+    #       yield H.XXX_new_token 'parse_md_codespan', d, 'html', 'tag', 'code', '<code>'
+    #       continue
+    #     #...................................................................................................
+    #     switch d.mk
+    #       when text_mk
+    #         if      idx is first_txt_idx  then  texts.push d.value.trimStart()
+    #         else if idx is last_txt_idx   then  texts.push d.value.trimEnd()
+    #         else                                texts.push d.value
+    #       when escchr_mk
+    #         ### TAINT must properly resolve escaped character ###
+    #         texts.push d.data.chr
+    #       else
+    #         throw new Error "^^parse_md_codespan@32", "internal error: unhandled token #{rpr d}"
+    #     #...................................................................................................
+    #     if ( idx is last_txt_idx )
+    #       value = texts.join ''
+    #       ### TAINT should not use `html` or must escape first ###
+    #       yield { mode: 'html', tid: 'text', mk: 'html:text', value, lnr1, x1, lnr2, x2, }
+    #   ### TAINT must account for case when parsing ends before closing markup ###
+    #   yield H.XXX_new_token 'parse_md_codespan', d, 'html', 'tag', 'code', '</code>'
+    #   #.....................................................................................................
+    #   collector.length = 0
+    #   return null
     #.......................................................................................................
     return parse_md_codespan = $ { stop }, ( d, send ) ->
-      debug '^34^', d
-      debug '^34^', d.mk ? '??', rpr d.value ? '??'
       if d is stop
         send e for e from flush()
         return null
       #.....................................................................................................
       switch d.mk
-        when enter_mk, text_mk, escchr_mk
+        when enter_mk, text_mk, nl_mk, escchr_mk
           send stamp d
           collector.push d
         when exit_mk
