@@ -57,16 +57,15 @@ class Markdown_sx extends Syntax
   #---------------------------------------------------------------------------------------------------------
   @lx_variable_codespan: ( cfg ) ->
     backtick_count  = null
-    jump_codespan   = "codespan["
     #.......................................................................................................
     entry_handler = ({ token, match, lexer, }) =>
       backtick_count = token.value.length
-      return jump_codespan
+      return '[cspan'
     #.......................................................................................................
     exit_handler = ({ token, match, lexer, }) ->
-      debug '^534^', token
-      debug '^534^', match
-      debug '^534^', token.value.length, backtick_count
+      # debug '^534^', token
+      # debug '^534^', match
+      # debug '^534^', token.value.length, backtick_count
       if token.value.length is backtick_count
         backtick_count = null
         return '.]'
@@ -76,13 +75,13 @@ class Markdown_sx extends Syntax
     #.......................................................................................................
     # info '^3531^', @cfg
     return [
-      { mode: 'plain',    tid: 'codespan',  jump: entry_handler,  pattern:  /(?<!`)`+(?!`)/u, reserved: '`', }
-      { mode: 'codespan', tid: 'codespan',  jump: exit_handler,   pattern:  /(?<!`)`+(?!`)/u, reserved: '`', }
-      ( new_nl_descriptor     'codespan' )
-      ( new_escchr_descriptor 'codespan' )
+      { mode: 'plain',    tid: 'start',  jump: entry_handler,  pattern:  /(?<!`)`+(?!`)/u, reserved: '`', }
+      { mode: 'cspan',    tid: 'stop',   jump: exit_handler,   pattern:  /(?<!`)`+(?!`)/u, reserved: '`', }
+      ( new_nl_descriptor     'cspan' )
+      ( new_escchr_descriptor 'cspan' )
       ### NOTE this should be produced with `lexer.add_catchall_lexeme()` ###
-      # { mode: 'codespan', tid: 'text',      jump: null,           pattern:  /(?:\\`|[^`])+/u,  }
-      { mode: 'codespan', tid: 'text',      jump: null,           pattern:  /[^`\\]+/u,  }
+      # { mode: 'cspan', tid: 'text',      jump: null,           pattern:  /(?:\\`|[^`])+/u,  }
+      { mode: 'cspan', tid: 'text',      jump: null,           pattern:  /[^`\\]+/u,  }
       ]
 
   #---------------------------------------------------------------------------------------------------------
