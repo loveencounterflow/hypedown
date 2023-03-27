@@ -458,4 +458,10 @@ These goals motivated the following decisions:
       processing stop; rather, they will be processed like other source material (and may produce a literal
       text `<?stop?>` or `<?st&#x6f;p?>` or even be elided, depending on the environment within they appear,
       which might happen to be running text, a code span, or an HTML comment)
+* **[–]** allow to provide custom XNCRs (`&bar;`, `&foo:bar;`)
+  * **[–]** provide a set of standard XNCRs
+  * **[–]** provide an XNCR that vanishes w/out replacement (similar to Unicode Zero Width Joiner, only has
+    an effect on lexing / parsing)
+
+
 
