@@ -462,6 +462,18 @@ These goals motivated the following decisions:
   * **[–]** provide a set of standard XNCRs
   * **[–]** provide an XNCR that vanishes w/out replacement (similar to Unicode Zero Width Joiner, only has
     an effect on lexing / parsing)
+* **[–]** implement processing chain like:
+  * **1)**—preprocess `<?start?>`, `<?stop?>` XMLPIs; assume all documents start in active mode, can use
+    `<?stop?>` near the top to add comments
+    * this ensures only active portions of the source are processed by downstream lexers, parsers
+  * **2)**—preprocess (and consolidate) newlines, indentations
+    * these parbreaks are preliminary and may be overriden by some of the later processing steps
+    * this ensures MD parbreaks (i.e. two or more consecutive blank lines) are seen by all downstream
+      transforms and can not accidentally be skipped over by markup
+    * **Note** that transforms for e.g. code *spans* must honor parbreaks while transforms for e.g. code
+      *blocks* must 'undo' them (i.e. include literal newlines, stamp parbreak tokens)
+  * **3)**—lexer
+  * **4)**—parser
 
 
 
