@@ -169,6 +169,7 @@ class @$020_priority_markup extends Transformer
     text_mk   = "cspan:text"
     escchr_mk = "cspan:escchr"
     collector = []
+    stop      = Symbol 'stop'
     #.......................................................................................................
     flush = ->
       last_idx      = collector.length - 1
@@ -181,13 +182,10 @@ class @$020_priority_markup extends Transformer
       texts         = []
       #.....................................................................................................
       for d, idx in collector
+        urge '^flush^', d.mk, ( rpr d.value ), ( idx is 0 ), ( idx is last_idx )
         if ( idx is 0 )
           yield stamp d
           yield H.XXX_new_token 'parse_md_codespan', d, 'html', 'tag', 'code', '<code>'
-          continue
-        else if ( idx is last_idx )
-          yield stamp d
-          yield H.XXX_new_token 'parse_md_codespan', d, 'html', 'tag', 'code', '</code>'
           continue
         #...................................................................................................
         switch d.mk
@@ -205,11 +203,19 @@ class @$020_priority_markup extends Transformer
           value = texts.join ''
           ### TAINT should not use `html` or must escape first ###
           yield { mode: 'html', tid: 'text', mk: 'html:text', value, lnr1, x1, lnr2, x2, }
+      ### TAINT must account for case when parsing ends before closing markup ###
+      yield H.XXX_new_token 'parse_md_codespan', d, 'html', 'tag', 'code', '</code>'
       #.....................................................................................................
       collector.length = 0
       return null
     #.......................................................................................................
-    return parse_md_codespan = ( d, send ) ->
+    return parse_md_codespan = $ { stop }, ( d, send ) ->
+      debug '^34^', d
+      debug '^34^', d.mk ? '??', rpr d.value ? '??'
+      if d is stop
+        send e for e from flush()
+        return null
+      #.....................................................................................................
       switch d.mk
         when enter_mk, text_mk, escchr_mk
           send stamp d
@@ -219,6 +225,7 @@ class @$020_priority_markup extends Transformer
           send e for e from flush()
         else
           send d
+      #.....................................................................................................
       return null
 
 
