@@ -63,7 +63,6 @@ class @$010_prepare_paragraphs extends Transformer
   $consolidate_newlines: ->
     count       = 0
     position    = null
-    is_virtual  = null
     stop        = Symbol 'stop'
     template    = { mode: 'plain', tid: 'nls', mk: 'plain:nls', $: 'consolidate_newlines', }
     #.......................................................................................................
