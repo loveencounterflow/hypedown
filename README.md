@@ -15,6 +15,7 @@
   - [HTMLish Tags](#htmlish-tags)
 - [Links](#links)
 - [To Do](#to-do)
+- [xxx](#xxx)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -475,5 +476,11 @@ These goals motivated the following decisions:
   * **3)**—lexer
   * **4)**—parser
 
+
+## xxx
+
+regular paragraph
+
+<aside>an aside here</aside>
 
 
