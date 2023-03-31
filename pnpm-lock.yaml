@@ -3,17 +3,17 @@ lockfileVersion: 5.4
 specifiers:
   datom: ^11.0.0
   guy: ^13.5.0
-  intertext-lexer: ^0.21.0
-  intertype: ^0.113.0
-  moonriver: ^4.8.0
+  intertext-lexer: ^0.23.0
+  intertype: ^0.114.0
+  moonriver: ^4.8.1
   paragate: ^4.0.0
 
 dependencies:
   datom: 11.0.0
   guy: 13.5.0
-  intertext-lexer: 0.21.0
-  intertype: 0.113.0
-  moonriver: 4.8.0
+  intertext-lexer: 0.23.0
+  intertype: 0.114.0
+  moonriver: 4.8.1
   paragate: 4.0.0
 
 packages:
@@ -153,20 +153,6 @@ packages:
       letsfreezethat: 3.1.0
     dev: false
 
-  /guy/13.4.1:
-    resolution: {integrity: sha512-on37Rey168p+CO6VqXgt7QlSUwDMZz+AtkzBNMo7Ez5v27sSPZcp+oj74Htx/DnLon+RfkJgs7BCuwpr6wwoaQ==}
-    peerDependencies:
-      acorn: ^8.7.1
-      acorn-loose: ^8.3.0
-      acorn-walk: ^8.2.0
-      astring: ^1.8.3
-      dayjs: ^1.11.7
-      tmp: ^0.2.1
-    dependencies:
-      intertype-legacy: 7.7.1
-      letsfreezethat: 3.1.0
-    dev: false
-
   /guy/13.5.0:
     resolution: {integrity: sha512-GHHY/Ay1RvjQyFfv6giKc/MFGP8RiLYmBYFVHsjuRJ2EQj+RAZfWs1U7wAQF/Vnrdq83f+gEHbrDefnL9Eh+sg==}
     peerDependencies:
@@ -186,15 +172,15 @@ packages:
     engines: {node: '>=10.0.0'}
     dev: false
 
-  /intertext-lexer/0.21.0:
-    resolution: {integrity: sha512-5s9TF9r/7nU19ibhRYDz/gIh54gHLyl0+sQ1Rl0OAsRPQnw+sIRplkh6JhlS4OKrW5rA6eUttCg0JKr9mFkHpw==}
+  /intertext-lexer/0.23.0:
+    resolution: {integrity: sha512-F06NkxMIOXM78FWcpZFBZ5zYwAM3KsGOIqvN5CCW2PL9aWqIMnRkXzf6yhMh2h3rKyOqopLD41omUAo0jtdO+g==}
     dependencies:
       compose-regexp-commonjs: 0.6.24
       datom: 11.0.0
       guy: 13.5.0
-      intertype: 0.111.0
+      intertype: 0.113.0
       ltsort: 4.0.0
-      moonriver: 4.8.0
+      moonriver: 4.8.1
     transitivePeerDependencies:
       - acorn
       - acorn-loose
@@ -262,6 +248,21 @@ packages:
       - tmp
     dev: false
 
+  /intertype/0.114.0:
+    resolution: {integrity: sha512-bGZHR4vHBjg7jai5Z2EqvhDcllBWD96UVD2bhOuI1ylZn909lomox/88Yl+mEZdxK8D367AfZsKf6VMXo3uArw==}
+    dependencies:
+      guy: 11.12.0
+      intertype-legacy: 7.7.1
+      rfdc: 1.3.0
+      to-width: 1.2.0
+    transitivePeerDependencies:
+      - acorn
+      - acorn-loose
+      - acorn-walk
+      - astring
+      - tmp
+    dev: false
+
   /intertype/7.6.5:
     resolution: {integrity: sha512-763YK3ezLYy9FkX+cTTg/qwGHteqlaTMiec9a2sVAKm7kXp9e7QkzbyYS6u4CcbLxx12L8bcRbe3SFsPeaJCMA==}
     dependencies:
@@ -309,12 +310,12 @@ packages:
       - tmp
     dev: false
 
-  /moonriver/4.8.0:
-    resolution: {integrity: sha512-05kH5VVpEZzPNo8TmfQ3C3qgsNxnH26+a0tLbM6hnCQ2BdG6YskyPVpzWTRuMR6wcO0555SEXruGwv+UvdExWA==}
+  /moonriver/4.8.1:
+    resolution: {integrity: sha512-ID+2iu8siQPmotm9Jl0fuKlXtvRIGCnbQR31gDsTcyD7AJylzgt7P44blHgFhWLGXDjYMG0OzVSo6L5Yeppsxg==}
     dependencies:
-      guy: 13.4.1
+      guy: 13.5.0
       intertext-splitlines: 1.2.1
-      intertype: 0.113.0
+      intertype: 0.114.0
       jfee: 0.1.4
     transitivePeerDependencies:
       - acorn
