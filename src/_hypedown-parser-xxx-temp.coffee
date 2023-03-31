@@ -84,7 +84,7 @@ class @$010_prepare_paragraphs extends Transformer
       return send d if d.$stamped
       if d.mk is 'plain:nl'
         count++
-        position   ?= Hypedown_lexer.get_position d
+        position   ?= Hypedown_lexer.get_token_position d
       else
         flush send
         send d
