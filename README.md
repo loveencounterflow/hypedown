@@ -10,6 +10,7 @@
 - [Design Goals](#design-goals)
 - [HypeDown: A MarkDown-like Text Formatting Language](#hypedown-a-markdown-like-text-formatting-language)
 - [Notes](#notes)
+  - [Update: Self-Closing Tags](#update-self-closing-tags)
   - [Including and Inserting](#including-and-inserting)
   - [Code Spans and Code Blocks](#code-spans-and-code-blocks)
   - [HTMLish Tags](#htmlish-tags)
@@ -313,6 +314,33 @@ These goals motivated the following decisions:
 
 
 ## Notes
+
+### Update: Self-Closing Tags
+
+An ingenious discovery has been made by
+(crisdosaygo/good.html)[https://github.com/crisdosaygo/good.html/blob/ba43292e35c4d48358abebbfe65f516318761f74/README.md#introducing-self-closing-tags-for-web-components]:
+
+> ## Introducing: self-closing tags for Web Components
+>
+> **Void tags** have *finally* come to custom-elements&mdash;*with a **BANG!***
+>
+> ***BANG!*** is your library of choice for self-closing tags with Web Components:
+>
+> ```js
+> <!app-header />
+> <div>
+>   <!app-content />
+> </div>
+> ```
+>
+> These self-closing tags are known as **bang-tags** (*web components with a **bang!***)
+>
+> They're actually just ***valid*** HTML comments that ***BANG!*** converts into valid [Web
+> Components](https://developer.mozilla.org/en-US/docs/Web/Web_Components).
+>
+> Like HTML [void tags](https://developer.mozilla.org/en-US/docs/Glossary/Empty_element), when you use
+> **bang-tags** you can omit the self-closing slash `/>`. So, `<!custom-el2>` is also a valid void
+> self-closing **bang-tag**.
 
 ### Including and Inserting
 
