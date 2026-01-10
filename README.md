@@ -320,7 +320,7 @@ These goals motivated the following decisions:
 An ingenious discovery has been made by
 (crisdosaygo/good.html)[https://github.com/crisdosaygo/good.html/blob/ba43292e35c4d48358abebbfe65f516318761f74/README.md#introducing-self-closing-tags-for-web-components]:
 
-> ## Introducing: self-closing tags for Web Components
+> **Introducing: self-closing tags for Web Components**
 >
 > **Void tags** have *finally* come to custom-elements&mdash;*with a **BANG!***
 >
@@ -342,10 +342,34 @@ An ingenious discovery has been made by
 > **bang-tags** you can omit the self-closing slash `/>`. So, `<!custom-el2>` is also a valid void
 > self-closing **bang-tag**.
 
+I intend to make these part of HypeDown syntax because:
+
+* `<!tag>` is short, salient, and self-documenting;
+
+* `<tag/>` has a well-known syntactic conundrum: when combined with unquoted attribute values, the slash of
+  a self-closing tag will *become part of the attribute value*, meaning that
+  * while `<tag/>` is a shorter version of `<tag></tag>`, and
+  * `<tag atr="val"/>` is a shorter version of `<tag atr="val"></tag>`,
+  * `<tag atr="val/"/>` is a shorter version of `<tag atr="val/"></tag>`,
+  * `<tag atr=val />` is a shorter version of `<tag atr="val"></tag>`, **but**
+  * `<tag atr=val/>` is actually just an opening tag `<tag atr="val">`.
+
+* Rewriting these examples with the 'pointy-bang' syntax gives us:
+  * `<!tag>` which is a shorter version of `<tag></tag>`, and
+  * `<!tag atr="val">` which is a shorter version of `<tag atr="val"></tag>`,
+  * `<!tag atr="val/">` which is a shorter version of `<tag atr="val/"></tag>`,
+  * `<!tag atr=val>` which is a shorter version of `<tag atr="val"></tag>`, **and**
+  * `<!tag atr=val/>` which is *also* just a shorter version of `<tag atr="val/"></tag>`.
+
+* *Aside:* Syntactically speaking, `<!tag>` is even closer to `&tag;` than `<tag/>` if only because within
+  the page code, it clarifies within the initial characters that what follows is a point-insertion rather
+  than a tagged region; in the future, `&tag;` may become just an alternative syntax for an attribute-less
+  self-closing tag.
+
 ### Including and Inserting
 
 * `<include/>` with mandatory attribute `path` reads the referenced file and puts the definitions
-  (declarations) of that file in a namespace (prefix) that defaults the the file's name
+  (declarations) of that file in a namespace (prefix) that defaults to the file's name
   * it is an error to refer multiple times to a file with the same name without giving explicit and distinct
     prefixes, so
 
